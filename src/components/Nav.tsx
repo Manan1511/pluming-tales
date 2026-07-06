@@ -19,23 +19,19 @@ export default function Nav() {
     >
       {/* Desktop: three-line stacked wordmark */}
       <div className="hidden md:flex flex-col items-start leading-none">
-        <span className="text-[0.7rem] tracking-[0.2em]">THE</span>
-        <span className="text-[0.7rem] tracking-[0.2em] mt-1">PLUMING TALES</span>
+        <span className="spaced-caps text-[0.8rem]">THE</span>
+        <span className="spaced-caps text-[0.8rem] mt-1">PLUMING TALES</span>
         <span className="w-[60%] h-px bg-umber/70 mt-1 self-center" />
-        <span className="text-[0.7rem] tracking-[0.2em] mt-1">COMPANY</span>
+        <span className="spaced-caps text-[0.8rem] mt-1">COMPANY</span>
       </div>
 
       {/* Mobile: single-line mark, no hamburger */}
-      <span className="md:hidden text-[0.7rem] tracking-[0.2em]">PLUMING TALES</span>
+      <span className="md:hidden spaced-caps text-[0.8rem]">PLUMING TALES</span>
 
       <nav className="flex items-center gap-5 md:gap-8">
-        {navLinks.map((label) => (
-          <a
-            key={label}
-            href={`#${label.toLowerCase()}`}
-            className="nav-link text-[0.68rem] md:text-[0.7rem] tracking-[0.22em]"
-          >
-            {label.toUpperCase()}
+        {navLinks.map(({ label, href }) => (
+          <a key={label} href={href} className="nav-link spaced-caps text-[0.78rem] md:text-[0.8rem]">
+            {label}
           </a>
         ))}
       </nav>

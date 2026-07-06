@@ -92,4 +92,12 @@
   .underline-grow:hover::after {
     width: 100%;
   }
+
+  /* Spaced-caps labels need weight + size floor, or Cormorant regular
+     dissolves into nothing at small sizes with wide tracking. */
+  .spaced-caps {
+    font-weight: 500;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
 }
