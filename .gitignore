@@ -4,3 +4,21 @@ dist-ssr
 *.local
 *.tsbuildinfo
 .DS_Store
+
+# Downloaded files
+drive-download-*.zip
+
+# Python
+__pycache__
+*.py[cod]
+*$py.class
+*.so
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# IDE
+.vscode
+.idea
