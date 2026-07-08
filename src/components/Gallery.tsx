@@ -37,7 +37,7 @@ export default function Gallery() {
 
   return (
     <section id="gallery" className="grain bg-alabaster border-t border-umber/40 py-32 px-6 md:px-12 scroll-mt-24">
-      <span className="spaced-caps text-[0.8rem] text-umber block mb-10">Gallery</span>
+      <span className="spaced-caps text-[1.05rem] text-umber block mb-10">Gallery</span>
 
       <div className="flex flex-wrap gap-6 mb-4">
         {galleryFilters.map((filter) => (
@@ -55,7 +55,6 @@ export default function Gallery() {
 
       <AnimatePresence mode="wait">
         <motion.p
-          key={active}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -74,15 +73,26 @@ export default function Gallery() {
           return (
             <ScrollReveal key={entry.id} delay={(i % 6) * 0.06} className="mb-6 break-inside-avoid">
               {entry.src ? (
-                <img
+                <motion.img
                   src={entry.src}
                   alt={`${entry.category} by The Pluming Tales Company`}
+                  initial={{ opacity: 0, y: 8 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: '-80px' }}
+                  transition={{ duration: 0.45, delay: (i % 6) * 0.06, ease: [0.16, 1, 0.3, 1] }}
                   className={`${aspect} w-full object-cover transition-opacity duration-[400ms] ease-in-out hover:opacity-[0.88]`}
                 />
               ) : (
-                <PlaceholderImage
-                  className={`${aspect} w-full transition-opacity duration-[400ms] ease-in-out hover:opacity-[0.88]`}
-                />
+                <motion.div
+                  initial={{ opacity: 0, y: 8 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: '-80px' }}
+                  transition={{ duration: 0.45, delay: (i % 6) * 0.06, ease: [0.16, 1, 0.3, 1] }}
+                >
+                  <PlaceholderImage
+                    className={`${aspect} w-full transition-opacity duration-[400ms] ease-in-out hover:opacity-[0.88]`}
+                  />
+                </motion.div>
               )}
             </ScrollReveal>
           )

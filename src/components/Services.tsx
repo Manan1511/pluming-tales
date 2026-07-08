@@ -1,12 +1,13 @@
+import { useEffect, useRef, useState } from 'react'
 import SmartImage from './SmartImage'
 import ScrollReveal from './ScrollReveal'
 import { services, type Service } from '../data/content'
 
-function ChosenFor({ items }: { items: string[] }) {
+function ChosenFor({ items, className = '' }: { items: string[]; className?: string }) {
   return (
-    <div className="flex flex-wrap gap-x-4 gap-y-2">
+    <div className={`flex flex-wrap gap-x-4 gap-y-2 ${className}`}>
       {items.slice(0, 5).map((item) => (
-        <span key={item} className="spaced-caps text-[0.68rem] text-umber/80">
+        <span key={item} className="spaced-caps text-[0.85rem] text-umber/80">
           {item}
         </span>
       ))}
@@ -18,8 +19,8 @@ function ServiceHeading({ service }: { service: Service }) {
   return (
     <>
       <div className="flex items-baseline gap-4">
-        <span className="spaced-caps text-[0.75rem] text-umber">{service.number}</span>
-        <span className="spaced-caps text-[0.75rem] text-umber">{service.category}</span>
+        <span className="spaced-caps text-[0.88rem] text-umber">{service.number}</span>
+        <span className="spaced-caps text-[0.88rem] text-umber">{service.category}</span>
       </div>
       <h3 className="font-normal mt-4 max-w-[20ch]" style={{ fontSize: 'clamp(1.75rem, 3vw, 2.5rem)' }}>
         {service.name}
@@ -37,7 +38,7 @@ function ServiceRowSplit({ service, reversed }: { service: Service; reversed: bo
             <SmartImage
               folder={`services/${service.slug}`}
               alt={service.name}
-              className={`${service.imageAspect ?? 'aspect-[4/5]'} w-full transition-transform duration-[800ms] ease-out group-hover:scale-[1.04]`}
+              className={`${service.imageAspect ?? 'aspect-[4/5]'} w-full transition-transform duration-[800ms] ease-out hover:scale-[1.04]`}
             />
           </div>
         </ScrollReveal>
@@ -62,8 +63,8 @@ function ServiceRowEmphasis({ service }: { service: Service }) {
     <div id={service.slug} className="py-20 border-t border-umber/40 scroll-mt-24">
       <ScrollReveal className="max-w-[720px] mx-auto text-center">
         <div className="flex items-baseline justify-center gap-4">
-          <span className="spaced-caps text-[0.75rem] text-umber">{service.number}</span>
-          <span className="spaced-caps text-[0.75rem] text-umber">{service.category}</span>
+          <span className="spaced-caps text-[0.88rem] text-umber">{service.number}</span>
+          <span className="spaced-caps text-[0.88rem] text-umber">{service.category}</span>
         </div>
         <h3 className="font-normal mt-4" style={{ fontSize: 'clamp(1.75rem, 3vw, 2.5rem)' }}>
           {service.name}
@@ -73,7 +74,7 @@ function ServiceRowEmphasis({ service }: { service: Service }) {
         </p>
         <p className="text-lg leading-[1.8] mt-6 max-w-[52ch] mx-auto">{service.whatWeCreate}</p>
         <div className="mt-8 flex justify-center">
-          <ChosenFor items={service.chosenFor} />
+          <ChosenFor items={service.chosenFor} className="justify-center" />
         </div>
       </ScrollReveal>
     </div>
@@ -94,7 +95,7 @@ function ServiceRowWide({ service }: { service: Service }) {
           <SmartImage
             folder={`services/${service.slug}`}
             alt={service.name}
-            className="aspect-[16/7] w-full transition-transform duration-[800ms] ease-out group-hover:scale-[1.04]"
+            className="aspect-[16/7] w-full transition-transform duration-[800ms] ease-out hover:scale-[1.04]"
           />
         </div>
       </ScrollReveal>
@@ -127,18 +128,182 @@ const LAYOUTS: Record<string, 'split' | 'emphasis' | 'wide'> = {
 
 export default function Services() {
   let splitIndex = 0
+  const sectionRef = useRef<HTMLElement | null>(null)
+  const [activeSlug, setActiveSlug] = useState<string>(services[0]?.slug ?? '')
+  const topSentinelRef = useRef<HTMLDivElement | null>(null)
+  const bottomSentinelRef = useRef<HTMLDivElement | null>(null)
+  const [pinned, setPinned] = useState(false)
+  const [sectionInView, setSectionInView] = useState(false)
+  const originalNavRef = useRef<HTMLDivElement | null>(null)
+
+  // Determine active subsection by finding the heading nearest the top of the viewport.
+  useEffect(() => {
+    let rafId = 0
+
+    function computeActive() {
+      const offset = Math.round(window.innerHeight * 0.18)
+      let closest: { id: string; dist: number } | null = null
+      for (const s of services) {
+        const el = document.getElementById(s.slug)
+        if (!el) continue
+        const rect = el.getBoundingClientRect()
+        const dist = Math.abs(rect.top - offset)
+        if (!closest || dist < closest.dist) closest = { id: s.slug, dist }
+      }
+      if (closest && closest.id !== activeSlug) setActiveSlug(closest.id)
+    }
+
+    function onScroll() {
+      if (rafId) cancelAnimationFrame(rafId)
+      rafId = requestAnimationFrame(computeActive)
+    }
+
+    // compute once and then on scroll
+    computeActive()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    window.addEventListener('resize', onScroll)
+
+    return () => {
+      if (rafId) cancelAnimationFrame(rafId)
+      window.removeEventListener('scroll', onScroll)
+      window.removeEventListener('resize', onScroll)
+    }
+  }, [activeSlug])
+
+  useEffect(() => {
+    const topEl = topSentinelRef.current
+    const bottomEl = bottomSentinelRef.current
+    if (!topEl || !bottomEl) return
+
+    const bottomObserver = new IntersectionObserver(
+      (entries) => {
+        const e = entries[0]
+        if (e && e.isIntersecting) setSectionInView(false)
+      },
+      { root: null, threshold: 0 }
+    )
+
+    const sectionEl = sectionRef.current
+    const sectionObserver = new IntersectionObserver(
+      (entries) => {
+        const e = entries[0]
+        setSectionInView(Boolean(e && e.isIntersecting))
+      },
+      { root: null, threshold: 0 }
+    )
+
+    bottomObserver.observe(bottomEl)
+    if (sectionEl) sectionObserver.observe(sectionEl)
+
+    return () => {
+      bottomObserver.disconnect()
+      sectionObserver.disconnect()
+    }
+  }, [])
+
+  useEffect(() => {
+    // Recompute pinned based on original nav position relative to top offset
+    let raf = 0
+    const headerOffset = 80 // px; adjust if header height differs
+
+    function recompute() {
+      const orig = originalNavRef.current
+      const sectionEl = sectionRef.current
+      if (!orig || !sectionEl) {
+        setPinned(false)
+        return
+      }
+
+      const origRect = orig.getBoundingClientRect()
+      const sectionRect = sectionEl.getBoundingClientRect()
+
+      // pinned when inside the section and the original nav's bottom has moved
+      // above the header offset (i.e., it's been scrolled past)
+      const shouldPin = sectionRect.top < headerOffset && origRect.bottom <= headerOffset && sectionRect.bottom > headerOffset
+      setPinned(Boolean(shouldPin))
+    }
+
+    function onScroll() {
+      if (raf) cancelAnimationFrame(raf)
+      raf = requestAnimationFrame(recompute)
+    }
+
+    recompute()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    window.addEventListener('resize', onScroll)
+
+    return () => {
+      if (raf) cancelAnimationFrame(raf)
+      window.removeEventListener('scroll', onScroll)
+      window.removeEventListener('resize', onScroll)
+    }
+  }, [sectionInView])
 
   return (
-    <section id="services" className="grain bg-alabaster px-6 md:px-12 py-24">
-      <span className="spaced-caps text-[0.8rem] text-umber">What We Do</span>
+    <section ref={sectionRef} id="services" className="grain bg-alabaster px-6 md:px-12 py-24">
+      <span className="spaced-caps text-[1.05rem] text-umber">What We Do</span>
 
-      <nav className="flex flex-wrap gap-x-6 gap-y-2 mt-6" aria-label="Services">
-        {services.map((service) => (
-          <a key={service.slug} href={`#${service.slug}`} className="nav-link spaced-caps text-[0.68rem] text-umber/80">
-            {service.category}
-          </a>
-        ))}
-      </nav>
+      <div className="mt-6">
+        <nav
+          aria-label="Services"
+          className="relative"
+        >
+          <div ref={topSentinelRef} className="h-0" />
+          <div className="hidden md:flex md:items-center md:justify-start">
+            <div ref={originalNavRef} className="sticky top-24 z-10 flex gap-6 mb-4">
+              {services.map((service) => (
+                <a
+                  key={service.slug}
+                  href={`#${service.slug}`}
+                  className={`spaced-caps text-[0.8rem] pb-1 border-b transition-colors whitespace-nowrap ${
+                    activeSlug === service.slug ? 'text-umber border-umber' : 'text-umber/50 border-transparent'
+                  }`}
+                  aria-current={activeSlug === service.slug ? 'true' : undefined}
+                >
+                  {service.category}
+                </a>
+              ))}
+            </div>
+          </div>
+
+          {/* Small screens: compact horizontal nav that doesn't take much space */}
+          <div className="md:hidden mt-3 overflow-auto">
+            <div className="flex gap-6 mb-4">
+              {services.map((service) => (
+                <a
+                  key={service.slug}
+                  href={`#${service.slug}`}
+                  className={`spaced-caps text-[0.8rem] pb-1 border-b transition-colors whitespace-nowrap ${
+                    activeSlug === service.slug ? 'text-umber border-umber' : 'text-umber/50 border-transparent'
+                  }`}
+                >
+                  {service.category}
+                </a>
+              ))}
+            </div>
+          </div>
+          {pinned ? (
+            <div className="hidden md:block fixed right-6 top-20 z-50">
+              <div className="bg-alabaster/80 backdrop-blur-sm px-3 py-2 rounded-md shadow-md">
+                <div className="flex gap-4">
+                  {services.map((service) => (
+                    <a
+                      key={service.slug}
+                      href={`#${service.slug}`}
+                      className={`spaced-caps text-[0.8rem] pb-1 border-b transition-colors whitespace-nowrap ${
+                        activeSlug === service.slug ? 'text-umber border-umber' : 'text-umber/50 border-transparent'
+                      }`}
+                      aria-current={activeSlug === service.slug ? 'true' : undefined}
+                    >
+                      {service.category}
+                    </a>
+                  ))}
+                </div>
+              </div>
+            </div>
+          ) : null}
+        </nav>
+      </div>
 
       <div className="mt-10">
         {services.map((service) => {
@@ -150,6 +315,7 @@ export default function Services() {
           return <ServiceRowSplit key={service.slug} service={service} reversed={reversed} />
         })}
       </div>
+          <div ref={bottomSentinelRef} className="h-0" />
     </section>
   )
 }
