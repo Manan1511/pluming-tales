@@ -1,0 +1,408 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>The Pluming Tales Company - Current Site Snapshot</title>
+    <style>
+      :root {
+        --alabaster: #e9e7e8;
+        --oatmere: #cec2b1;
+        --umber: #705f4f;
+        --onyx: #0d0b07;
+        --soft: rgba(112, 95, 79, 0.72);
+        --line: rgba(112, 95, 79, 0.22);
+        --panel: rgba(250, 248, 244, 0.72);
+      }
+
+      * { box-sizing: border-box; }
+      html { scroll-behavior: smooth; background: var(--alabaster); }
+      body {
+        margin: 0;
+        color: var(--onyx);
+        background: var(--alabaster);
+        font-family: Georgia, "Times New Roman", serif;
+        line-height: 1.6;
+      }
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        opacity: 0.06;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+        mix-blend-mode: overlay;
+      }
+      a { color: inherit; text-decoration: none; }
+      img { display: block; max-width: 100%; }
+      .wrap { width: min(1180px, calc(100% - 32px)); margin: 0 auto; }
+      .spaced-caps { font-family: Arial, Helvetica, sans-serif; font-weight: 500; letter-spacing: 0.15em; text-transform: uppercase; }
+      .italic-safe { font-style: italic; padding-bottom: 4px; line-height: 1.15; }
+      .nav-link { position: relative; padding-bottom: 4px; }
+      .nav-link::after {
+        content: "";
+        position: absolute;
+        left: 0; bottom: 0;
+        width: 100%; height: 1px;
+        background: var(--umber);
+        transform: scaleX(0);
+        transform-origin: left;
+        transition: transform .4s cubic-bezier(.16,1,.3,1);
+      }
+      .nav-link:hover::after { transform: scaleX(1); }
+      header {
+        position: fixed; top: 0; left: 0; right: 0; z-index: 40;
+        height: 64px; display: flex; align-items: center;
+        justify-content: space-between; padding: 0 24px;
+        transition: background .4s ease, backdrop-filter .4s ease;
+        background: rgba(233,231,232,0.12); backdrop-filter: blur(0);
+      }
+      header .mark { display: flex; flex-direction: column; line-height: 1; }
+      header .mark span { font-size: .8rem; }
+      header nav { display: flex; gap: 20px; align-items: center; }
+      .section {
+        padding: 96px 0;
+        border-top: 1px solid var(--line);
+      }
+      .section:first-of-type { border-top: 0; padding-top: 118px; }
+      .eyebrow { font-size: .78rem; color: var(--soft); }
+      .hero {
+        display: grid; grid-template-columns: 1.1fr .9fr; gap: 48px; align-items: center;
+        padding-bottom: 92px;
+      }
+      .hero h1 { margin: 12px 0 16px; font-size: clamp(2.5rem, 5vw, 5rem); font-weight: 400; line-height: .95; max-width: 12ch; }
+      .hero p, .section p { font-size: 1.06rem; color: var(--soft); }
+      .hero .copy p { max-width: 56ch; }
+      .cta-row { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 26px; }
+      .cta {
+        display: inline-flex; align-items: center; gap: 10px;
+        font-size: .78rem; letter-spacing: .14em; text-transform: uppercase;
+        border-bottom: 1px solid var(--umber); padding-bottom: 4px;
+      }
+      .hero .image {
+        border-radius: 30px; overflow: hidden; box-shadow: 0 24px 56px rgba(77,53,41,.14);
+        border: 1px solid rgba(112,95,79,.15);
+      }
+      .hero .image img { width: 100%; height: 100%; object-fit: cover; }
+      .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 36px; }
+      .panel {
+        background: var(--panel); border: 1px solid rgba(112,95,79,.16); border-radius: 28px;
+        padding: 28px; box-shadow: 0 20px 46px rgba(77,53,41,.06); backdrop-filter: blur(8px);
+      }
+      .section h2 { margin: 8px 0 18px; font-size: clamp(2rem, 4vw, 3.8rem); font-weight: 400; line-height: .98; }
+      .section h3 { margin: 0; font-size: clamp(1.6rem, 2.5vw, 2.3rem); font-weight: 400; }
+      .stack { display: grid; gap: 18px; }
+      .services nav, .gallery-filters { display: flex; flex-wrap: wrap; gap: 12px 18px; }
+      .pill {
+        display: inline-flex; align-items: center; border-radius: 999px;
+        padding: 8px 14px; background: rgba(250,248,244,.62); border: 1px solid rgba(112,95,79,.15);
+        font-size: .68rem; letter-spacing: .15em; text-transform: uppercase; color: var(--umber);
+      }
+      .services-list { display: grid; gap: 30px; margin-top: 28px; }
+      .service {
+        display: grid; gap: 18px; padding-top: 26px; border-top: 1px solid rgba(112,95,79,.22);
+      }
+      .service-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: center; }
+      .service img, .gallery img { width: 100%; object-fit: cover; border-radius: 26px; border: 1px solid rgba(112,95,79,.14); }
+      .gallery-grid { column-count: 3; column-gap: 18px; }
+      .gallery-card { break-inside: avoid; margin-bottom: 18px; }
+      .gallery-card img { width: 100%; border-radius: 24px; }
+      .process { display: grid; gap: 18px; }
+      .process-step { display: grid; grid-template-columns: 86px 1fr; gap: 18px; align-items: start; padding: 22px 0; border-top: 1px solid rgba(112,95,79,.18); }
+      .process-step:first-child { border-top: 0; }
+      .process-step .num { font-size: .75rem; color: var(--soft); }
+      .why-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+      .why-item h3 { font-size: 1.35rem; margin-bottom: 12px; }
+      .why-item p { margin: 0; }
+      .testimonial-list { display: grid; gap: 18px; }
+      blockquote {
+        margin: 0; padding: 24px; border-radius: 24px; border: 1px solid rgba(112,95,79,.16);
+        background: rgba(250,248,244,.7);
+      }
+      blockquote p { margin: 0 0 12px; font-size: 1.02rem; color: var(--onyx); }
+      blockquote footer { color: var(--soft); font-size: .78rem; letter-spacing: .16em; text-transform: uppercase; }
+      .contact { display: grid; grid-template-columns: 1fr .9fr; gap: 24px; }
+      .form {
+        display: grid; gap: 14px;
+      }
+      .field { display: grid; gap: 8px; }
+      .field label { font-size: .76rem; letter-spacing: .15em; text-transform: uppercase; color: var(--soft); }
+      .field input, .field textarea, .field select {
+        width: 100%; border: 1px solid rgba(112,95,79,.18); border-radius: 18px; padding: 14px 16px;
+        background: rgba(255,255,255,.44); color: var(--onyx); font: inherit;
+      }
+      .field textarea { min-height: 140px; resize: vertical; }
+      .submit {
+        display: inline-flex; align-items: center; justify-content: center;
+        border: 0; border-radius: 999px; padding: 14px 20px; background: var(--umber); color: #fff;
+        font-family: Arial, Helvetica, sans-serif; letter-spacing: .12em; text-transform: uppercase;
+      }
+      footer { padding: 34px 0 54px; color: var(--soft); font-size: .82rem; }
+      .note { margin-top: 16px; color: var(--soft); }
+      @media (max-width: 980px) {
+        .hero, .two-col, .service-grid, .contact, .why-grid { grid-template-columns: 1fr; }
+        .gallery-grid { column-count: 2; }
+      }
+      @media (max-width: 720px) {
+        header { padding: 0 16px; }
+        header nav { gap: 14px; font-size: .72rem; }
+        .wrap { width: min(100% - 24px, 1180px); }
+        .section { padding: 72px 0; }
+        .gallery-grid { column-count: 1; }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="mark spaced-caps">
+        <span>THE</span>
+        <span>PLUMING TALES</span>
+        <span>COMPANY</span>
+      </div>
+      <nav class="spaced-caps" aria-label="Primary">
+        <a class="nav-link" href="#about">About</a>
+        <a class="nav-link" href="#services">Services</a>
+        <a class="nav-link" href="#gallery">Gallery</a>
+        <a class="nav-link" href="#contact">Contact</a>
+      </nav>
+    </header>
+
+    <main class="wrap">
+      <section class="section hero" id="top">
+        <div class="copy">
+          <span class="eyebrow spaced-caps">THE PLUMING TALES COMPANY</span>
+          <h1>Bespoke Calligraphy, Engraving & Luxury Personalisation for Celebrations, Brands and Keepsakes.</h1>
+          <p>The Pluming Tales Company is a Mumbai-based luxury personalisation studio specialising in bespoke calligraphy, hand engraving, premium stationery and elevated guest experiences for weddings, luxury brands and meaningful gifting.</p>
+          <p>From handcrafted invitations and personalised keepsakes to live event activations and bespoke signage, we create thoughtful details that leave lasting impressions.</p>
+          <div class="cta-row">
+            <a class="cta" href="#services">Explore Services</a>
+            <a class="cta" href="#contact">Enquire Now</a>
+          </div>
+        </div>
+        <div class="image">
+          <img src="../src/assets/images/hero/hero-01.jpg" alt="The Pluming Tales Company hero" />
+        </div>
+      </section>
+
+      <section class="section" id="about">
+        <div class="two-col">
+          <div>
+            <span class="eyebrow spaced-caps">Thoughtful Details. Timeless Elegance.</span>
+            <h2>Luxury is found in the details.</h2>
+            <div class="stack">
+              <p>The handwritten name on an invitation, the engraving on a cherished keepsake, the shimmer of gold leaf, the personalised piece a guest carries home long after the celebration ends.</p>
+              <p>At The Pluming Tales Company, we create these details with intention, artistry and care.</p>
+              <p>Because the smallest details often leave the greatest impression.</p>
+            </div>
+          </div>
+          <div class="panel">
+            <span class="eyebrow spaced-caps">Meet The Founder</span>
+            <h3>The Heart Behind The Pluming Tales Company</h3>
+            <div class="stack">
+              <p>Hi, I'm Neha Chhabria, founder and creative director of The Pluming Tales Company.</p>
+              <p>My journey with calligraphy began in 2017 and evolved into a studio dedicated to bespoke craftsmanship, luxury personalisation and elevated experiences.</p>
+              <p>Today, I collaborate with couples, luxury brands and businesses to create pieces that celebrate milestones, strengthen brand stories and become treasured keepsakes.</p>
+            </div>
+            <p class="italic-safe" style="margin-top:18px; font-size:1.3rem;">Creating beautiful details that leave lasting impressions.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="services">
+        <span class="eyebrow spaced-caps">What We Do</span>
+        <h2>Services shaped with care.</h2>
+        <div class="services">
+          <nav class="spaced-caps" aria-label="Services">
+            <a class="pill" href="#engraving">Engraving</a>
+            <a class="pill" href="#embossing">Embossing</a>
+            <a class="pill" href="#invitations">Invitations</a>
+            <a class="pill" href="#gilding">Gilding</a>
+            <a class="pill" href="#stationery">Stationery</a>
+            <a class="pill" href="#on-site">On-Site</a>
+            <a class="pill" href="#signage">Signage</a>
+          </nav>
+
+          <div class="services-list">
+            <article class="service" id="engraving">
+              <div class="service-grid">
+                <img src="../src/assets/images/services/engraving/drive-download-20260-01.jpg" alt="Engraving" />
+                <div>
+                  <div class="spaced-caps eyebrow">01 Engraving</div>
+                  <h3>Hand Engraving & Surface Personalisation</h3>
+                  <p>Personalised engraving across glass, metal, leather, acrylic and wood for gifting, celebrations and brand experiences.</p>
+                  <p class="italic-safe" style="font-size:1.35rem;">Because the most treasured objects are often the ones that carry a personal story.</p>
+                </div>
+              </div>
+            </article>
+
+            <article class="service" id="embossing">
+              <div class="service-grid">
+                <img src="../src/assets/images/services/embossing/drive-download-20260-01.jpg" alt="Embossing" />
+                <div>
+                  <div class="spaced-caps eyebrow">02 Embossing</div>
+                  <h3>Luxury Embossing & Heat Foiling</h3>
+                  <p>Premium embossing, foil stamping and monogramming for stationery, leather accessories and luxury packaging.</p>
+                  <p class="italic-safe" style="font-size:1.35rem;">Because tactile details communicate craftsmanship and quality before a single word is read.</p>
+                </div>
+              </div>
+            </article>
+
+            <article class="service" id="invitations">
+              <div class="service-grid">
+                <img src="../src/assets/images/services/invitations/drive-download-20260-01.jpg" alt="Invitations" />
+                <div>
+                  <div class="spaced-caps eyebrow">03 Invitations</div>
+                  <h3>Bespoke Invitations & Paper Goods</h3>
+                  <p>Invitation suites, save-the-dates, menus, place cards and wedding stationery designed to reflect your celebration.</p>
+                  <p class="italic-safe" style="font-size:1.35rem;">Because every memorable occasion deserves an introduction that feels just as special.</p>
+                </div>
+              </div>
+            </article>
+
+            <article class="service" id="gilding">
+              <div class="service-grid">
+                <img src="../src/assets/images/services/gilding/drive-download-20260-01.jpg" alt="Gilding" />
+                <div>
+                  <div class="spaced-caps eyebrow">04 Gilding</div>
+                  <h3>Illuminated Gold Leaf Artwork</h3>
+                  <p>Hand gilded artwork using genuine 24K gold leaf and traditional techniques.</p>
+                  <p class="italic-safe" style="font-size:1.35rem;">Because some stories deserve to become heirlooms.</p>
+                </div>
+              </div>
+            </article>
+
+            <article class="service" id="stationery">
+              <div class="service-grid">
+                <img src="../src/assets/images/services/stationery/drive-download-20260-01.jpg" alt="Stationery" />
+                <div>
+                  <div class="spaced-caps eyebrow">05 Stationery</div>
+                  <h3>Bespoke Stationery & Personalised Paper Goods</h3>
+                  <p>Luxury paper goods and personalised stationery designed for gifting, celebrations and everyday elegance.</p>
+                  <p class="italic-safe" style="font-size:1.35rem;">Because thoughtful details transform everyday essentials into cherished possessions.</p>
+                </div>
+              </div>
+            </article>
+
+            <article class="service" id="on-site">
+              <div class="service-grid">
+                <img src="../src/assets/images/services/on-site/on-site-01.jpg" alt="On-site calligraphy" />
+                <div>
+                  <div class="spaced-caps eyebrow">06 On-Site</div>
+                  <h3>Live Calligraphy & Engraving Experiences</h3>
+                  <p>Interactive personalisation experiences where guests watch keepsakes being created in real time.</p>
+                  <p class="italic-safe" style="font-size:1.35rem;">Because experiences create stronger emotional connections than products alone.</p>
+                </div>
+              </div>
+            </article>
+
+            <article class="service" id="signage">
+              <div class="service-grid">
+                <img src="../src/assets/images/services/signage/drive-download-20260-01.jpg" alt="Signage" />
+                <div>
+                  <div class="spaced-caps eyebrow">07 Signage</div>
+                  <h3>Luxury Name Plates & Bespoke Signage</h3>
+                  <p>Custom name plates, welcome signage, table displays and brand installations crafted to elevate spaces and experiences.</p>
+                  <p class="italic-safe" style="font-size:1.35rem;">Because first impressions begin long before a conversation starts.</p>
+                </div>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section gallery" id="gallery">
+        <span class="eyebrow spaced-caps">Gallery</span>
+        <h2>Each stroke, a thought made visible.</h2>
+        <div class="gallery-filters spaced-caps" aria-label="Gallery filters">
+          <span class="pill">All</span><span class="pill">Engraving</span><span class="pill">Embossing</span><span class="pill">Invitations</span><span class="pill">Gilding</span><span class="pill">Stationery</span><span class="pill">On-Site</span><span class="pill">Signage</span>
+        </div>
+        <div class="gallery-grid" style="margin-top:24px;">
+          <div class="gallery-card"><img src="../src/assets/images/gallery/engraving/drive-download-20260-01.jpg" alt="Gallery engraving" /></div>
+          <div class="gallery-card"><img src="../src/assets/images/gallery/embossing/drive-download-20260-01.jpg" alt="Gallery embossing" /></div>
+          <div class="gallery-card"><img src="../src/assets/images/gallery/invitations/drive-download-20260-01.jpg" alt="Gallery invitations" /></div>
+          <div class="gallery-card"><img src="../src/assets/images/gallery/gilding/drive-download-20260-01.jpg" alt="Gallery gilding" /></div>
+          <div class="gallery-card"><img src="../src/assets/images/gallery/stationery/drive-download-20260-01.jpg" alt="Gallery stationery" /></div>
+          <div class="gallery-card"><img src="../src/assets/images/gallery/on-site/on-site-01.jpg" alt="Gallery on-site" /></div>
+          <div class="gallery-card"><img src="../src/assets/images/gallery/signage/drive-download-20260-01.jpg" alt="Gallery signage" /></div>
+        </div>
+      </section>
+
+      <section class="section" id="process">
+        <span class="eyebrow spaced-caps">Our Process</span>
+        <h2>A simple process, thoughtfully handled.</h2>
+        <div class="process">
+          <div class="process-step"><div class="num spaced-caps">01</div><div><h3>Inquire</h3><p>Share your vision with us.</p></div></div>
+          <div class="process-step"><div class="num spaced-caps">02</div><div><h3>Collaborate</h3><p>We design it together.</p></div></div>
+          <div class="process-step"><div class="num spaced-caps">03</div><div><h3>Create</h3><p>Handcrafted with care and intention.</p></div></div>
+          <div class="process-step"><div class="num spaced-caps">04</div><div><h3>Deliver</h3><p>Your story, beautifully told.</p></div></div>
+        </div>
+      </section>
+
+      <section class="section" id="collaborations">
+        <div class="two-col">
+          <div>
+            <span class="eyebrow spaced-caps">Trusted By Brands That Value Craftsmanship</span>
+            <h2>Brand collaborations, created with the same care.</h2>
+            <div class="stack">
+              <p>We collaborate with luxury brands to create personalised experiences that feel thoughtful, memorable and deeply connected to their story.</p>
+              <p>From on-site activations and product personalisation to bespoke gifting and premium packaging, we help brands create moments that customers remember long after the event ends.</p>
+            </div>
+          </div>
+          <div class="panel">
+            <img src="../src/assets/images/services/signage/drive-download-20260-02.jpg" alt="Brand collaboration" style="border-radius:22px;" />
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="why">
+        <span class="eyebrow spaced-caps">Why Clients Choose Us</span>
+        <h2>Quiet detail. Refined finish.</h2>
+        <div class="why-grid">
+          <article class="panel why-item"><h3>Created With Intention</h3><p>From concept to final finish, every piece is designed with purpose and attention to detail.</p></article>
+          <article class="panel why-item"><h3>Crafted Across Surfaces</h3><p>From paper and leather to glass, acrylic, wood and metal, we bring artistry to unexpected places.</p></article>
+          <article class="panel why-item"><h3>Elevated Experiences</h3><p>Our work is designed to be experienced, remembered and shared.</p></article>
+          <article class="panel why-item"><h3>Attention To Detail</h3><p>Every part of the experience is considered with care, so the final result feels seamless, polished and true to your vision.</p></article>
+          <article class="panel why-item"><h3>Luxury Through Personalisation</h3><p>We believe the most meaningful pieces are the ones created exclusively for you.</p></article>
+        </div>
+      </section>
+
+      <section class="section" id="testimonials">
+        <span class="eyebrow spaced-caps">Kind Words</span>
+        <h2>Thoughtful notes from past clients.</h2>
+        <div class="testimonial-list">
+          <blockquote><p>The engraved glasses created by The Pluming Tales Company became one of our most appreciated Diwali gifts. Beautifully crafted and thoughtfully personalised, they left a lasting impression on our clients.</p><footer>ITALITE</footer></blockquote>
+          <blockquote><p>I absolutely loved the engraved wedding monogram glasses created by The Pluming Tales Company. They were thoughtful, elegant and added such a personal touch for our friends celebrations. The final pieces were beautifully executed and exactly what we had envisioned.</p><footer>RAINA BHATIJA</footer></blockquote>
+          <blockquote><p>From our custom monogram to the calligraphy details on our Save the Date, every element felt uniquely ours. The process was seamless from start to finish and the final result exceeded our expectations.</p><footer>PIHU MATA</footer></blockquote>
+        </div>
+      </section>
+
+      <section class="section" id="contact">
+        <div class="contact">
+          <div>
+            <span class="eyebrow spaced-caps">Let's Create Something Beautiful Together</span>
+            <h2>Enquiries, handled with care.</h2>
+            <div class="stack">
+              <p>Whether you're planning a wedding, organising a brand activation or looking for a personalised keepsake, we'd love to hear your story.</p>
+              <p>Share a few details below and we'll be in touch to bring your vision to life.</p>
+            </div>
+            <p class="note">@theplumingtales · Mumbai, India · theplumingtales@gmail.com</p>
+          </div>
+          <div class="panel">
+            <form class="form">
+              <div class="field"><label>Name</label><input type="text" placeholder="Your name" /></div>
+              <div class="field"><label>Email</label><input type="email" placeholder="Your email" /></div>
+              <div class="field"><label>Service</label><select><option>Choose a service</option><option>Hand Engraving & Surface Personalisation</option><option>Luxury Embossing & Heat Foiling</option><option>Bespoke Invitations & Paper Goods</option><option>Illuminated Gold Leaf Artwork</option><option>Bespoke Stationery & Personalised Paper Goods</option><option>Live Calligraphy & Engraving Experiences</option><option>Luxury Name Plates & Bespoke Signage</option></select></div>
+              <div class="field"><label>Message</label><textarea placeholder="Tell us about your project"></textarea></div>
+              <button class="submit" type="button">Start Your Story →</button>
+            </form>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="wrap">
+      <div class="spaced-caps">The Pluming Tales Company</div>
+      <div class="note">Standalone snapshot of the current website. Open this file directly in a browser to download or review it locally.</div>
+    </footer>
+  </body>
+</html>

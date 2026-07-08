@@ -17,20 +17,19 @@ export default function Nav() {
         scrolled ? 'bg-alabaster/92 backdrop-blur-sm' : 'bg-transparent'
       }`}
     >
-      {/* Desktop: three-line stacked wordmark */}
-      <div className="hidden md:flex flex-col items-start leading-none">
-        <span className="spaced-caps text-[0.8rem]">THE</span>
-        <span className="spaced-caps text-[0.8rem] mt-1">PLUMING TALES</span>
-        <span className="w-[60%] h-px bg-umber/70 mt-1 self-center" />
-        <span className="spaced-caps text-[0.8rem] mt-1">COMPANY</span>
-      </div>
+      {/* Desktop: single-line wordmark (Original: 3-line stacked text-[0.8rem]) */}
+      <span className="hidden md:inline spaced-caps text-[1.25rem] tracking-[0.16em] whitespace-nowrap">
+        THE PLUMING TALES COMPANY
+      </span>
 
-      {/* Mobile: single-line mark, no hamburger */}
-      <span className="md:hidden spaced-caps text-[0.8rem]">PLUMING TALES</span>
+      {/* Mobile: single-line mark (Original: text-[0.8rem]) */}
+      <span className="md:hidden spaced-caps text-[1.08rem] tracking-[0.12em] whitespace-nowrap">
+        PLUMING TALES
+      </span>
 
       <nav className="flex items-center gap-5 md:gap-8">
         {navLinks.map(({ label, href }) => (
-          <a key={label} href={href} className="nav-link spaced-caps text-[0.78rem] md:text-[0.8rem]">
+          <a key={label} href={href} className="nav-link spaced-caps text-[0.88rem] md:text-[0.92rem]">
             {label}
           </a>
         ))}

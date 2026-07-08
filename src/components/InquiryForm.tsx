@@ -5,7 +5,7 @@ import { enquiry, formspreeEndpoint, serviceOptions } from '../data/content'
 const fieldClass =
   'w-full bg-transparent border-b border-onyx/30 py-2 focus:border-umber focus:outline-none transition-colors duration-300 text-lg'
 
-const labelClass = 'block spaced-caps text-[0.75rem] mb-2'
+const labelClass = 'block spaced-caps text-[0.88rem] mb-2'
 
 type Status = 'idle' | 'submitting' | 'success' | 'error'
 
@@ -138,7 +138,7 @@ export default function InquiryForm() {
               <button
                 type="submit"
                 disabled={status === 'submitting'}
-                className="md:col-span-2 underline-grow spaced-caps w-fit text-[0.85rem] mt-4 disabled:opacity-50"
+                className="md:col-span-2 underline-grow spaced-caps w-fit text-[0.95rem] mt-4 disabled:opacity-50"
               >
                 {status === 'submitting' ? 'SENDING…' : enquiry.submitLabel}
               </button>

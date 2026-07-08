@@ -8,7 +8,8 @@ export default function Hero() {
         <div className="w-full flex flex-col md:flex-row gap-12 md:gap-8">
           <div className="w-full md:w-[55%] flex flex-col justify-center">
             <span className="block w-20 h-px bg-umber mb-8" />
-            <span className="spaced-caps text-[0.8rem] mb-6">{hero.eyebrow}</span>
+            {/* Original size: text-[0.8rem] */}
+            <span className="spaced-caps text-[1.1rem] mb-6">{hero.eyebrow}</span>
             <h1
               className="font-medium -tracking-[0.02em]"
               style={{ fontSize: 'clamp(3.5rem, 8vw, 7rem)', lineHeight: 1 }}
