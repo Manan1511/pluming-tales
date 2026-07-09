@@ -7,7 +7,7 @@ export default function Founder() {
   const candidCount = Math.max(getImages('founder').length - 1, 0)
 
   return (
-    <section className="grain relative bg-alabaster py-32 overflow-hidden">
+    <section id="about" className="grain relative bg-alabaster py-32 overflow-hidden scroll-mt-24">
       <span
         className="absolute top-8 left-6 md:left-12 font-medium text-umber opacity-15 select-none"
         style={{ fontSize: '8rem' }}

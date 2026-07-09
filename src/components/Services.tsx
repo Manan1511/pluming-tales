@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
+import { AnimatePresence, motion } from 'framer-motion'
 import SmartImage from './SmartImage'
 import ScrollReveal from './ScrollReveal'
 import { services, type Service } from '../data/content'
@@ -31,7 +32,7 @@ function ServiceHeading({ service }: { service: Service }) {
 
 function ServiceRowSplit({ service, reversed }: { service: Service; reversed: boolean }) {
   return (
-    <div id={service.slug} className="group py-20 border-t border-umber/40 first:border-t-0 first:pt-8 scroll-mt-24">
+    <div id={service.slug} className="group py-12 scroll-mt-24">
       <div className={`flex flex-col gap-10 md:gap-16 ${reversed ? 'md:flex-row-reverse' : 'md:flex-row'}`}>
         <ScrollReveal className="w-full md:w-[45%]">
           <div className="overflow-hidden">
@@ -60,7 +61,7 @@ function ServiceRowSplit({ service, reversed }: { service: Service; reversed: bo
    pattern without forcing a portrait photo into a landscape frame. */
 function ServiceRowEmphasis({ service }: { service: Service }) {
   return (
-    <div id={service.slug} className="py-20 border-t border-umber/40 scroll-mt-24">
+    <div id={service.slug} className="py-12 scroll-mt-24">
       <ScrollReveal className="max-w-[720px] mx-auto text-center">
         <div className="flex items-baseline justify-center gap-4">
           <span className="spaced-caps text-[0.88rem] text-umber">{service.number}</span>
@@ -85,7 +86,7 @@ function ServiceRowEmphasis({ service }: { service: Service }) {
    never has to crop a portrait photo into a wide frame. */
 function ServiceRowWide({ service }: { service: Service }) {
   return (
-    <div id={service.slug} className="group py-20 border-t border-umber/40 scroll-mt-24">
+    <div id={service.slug} className="group py-12 scroll-mt-24">
       <ScrollReveal>
         <ServiceHeading service={service} />
       </ScrollReveal>
@@ -127,195 +128,68 @@ const LAYOUTS: Record<string, 'split' | 'emphasis' | 'wide'> = {
 }
 
 export default function Services() {
-  let splitIndex = 0
   const sectionRef = useRef<HTMLElement | null>(null)
   const [activeSlug, setActiveSlug] = useState<string>(services[0]?.slug ?? '')
-  const topSentinelRef = useRef<HTMLDivElement | null>(null)
-  const bottomSentinelRef = useRef<HTMLDivElement | null>(null)
-  const [pinned, setPinned] = useState(false)
-  const [sectionInView, setSectionInView] = useState(false)
-  const originalNavRef = useRef<HTMLDivElement | null>(null)
 
-  // Determine active subsection by finding the heading nearest the top of the viewport.
-  useEffect(() => {
-    let rafId = 0
-
-    function computeActive() {
-      const offset = Math.round(window.innerHeight * 0.18)
-      let closest: { id: string; dist: number } | null = null
-      for (const s of services) {
-        const el = document.getElementById(s.slug)
-        if (!el) continue
-        const rect = el.getBoundingClientRect()
-        const dist = Math.abs(rect.top - offset)
-        if (!closest || dist < closest.dist) closest = { id: s.slug, dist }
-      }
-      if (closest && closest.id !== activeSlug) setActiveSlug(closest.id)
-    }
-
-    function onScroll() {
-      if (rafId) cancelAnimationFrame(rafId)
-      rafId = requestAnimationFrame(computeActive)
-    }
-
-    // compute once and then on scroll
-    computeActive()
-    window.addEventListener('scroll', onScroll, { passive: true })
-    window.addEventListener('resize', onScroll)
-
-    return () => {
-      if (rafId) cancelAnimationFrame(rafId)
-      window.removeEventListener('scroll', onScroll)
-      window.removeEventListener('resize', onScroll)
-    }
-  }, [activeSlug])
-
-  useEffect(() => {
-    const topEl = topSentinelRef.current
-    const bottomEl = bottomSentinelRef.current
-    if (!topEl || !bottomEl) return
-
-    const bottomObserver = new IntersectionObserver(
-      (entries) => {
-        const e = entries[0]
-        if (e && e.isIntersecting) setSectionInView(false)
-      },
-      { root: null, threshold: 0 }
-    )
-
-    const sectionEl = sectionRef.current
-    const sectionObserver = new IntersectionObserver(
-      (entries) => {
-        const e = entries[0]
-        setSectionInView(Boolean(e && e.isIntersecting))
-      },
-      { root: null, threshold: 0 }
-    )
-
-    bottomObserver.observe(bottomEl)
-    if (sectionEl) sectionObserver.observe(sectionEl)
-
-    return () => {
-      bottomObserver.disconnect()
-      sectionObserver.disconnect()
-    }
-  }, [])
-
-  useEffect(() => {
-    // Recompute pinned based on original nav position relative to top offset
-    let raf = 0
-    const headerOffset = 80 // px; adjust if header height differs
-
-    function recompute() {
-      const orig = originalNavRef.current
-      const sectionEl = sectionRef.current
-      if (!orig || !sectionEl) {
-        setPinned(false)
-        return
-      }
-
-      const origRect = orig.getBoundingClientRect()
-      const sectionRect = sectionEl.getBoundingClientRect()
-
-      // pinned when inside the section and the original nav's bottom has moved
-      // above the header offset (i.e., it's been scrolled past)
-      const shouldPin = sectionRect.top < headerOffset && origRect.bottom <= headerOffset && sectionRect.bottom > headerOffset
-      setPinned(Boolean(shouldPin))
-    }
-
-    function onScroll() {
-      if (raf) cancelAnimationFrame(raf)
-      raf = requestAnimationFrame(recompute)
-    }
-
-    recompute()
-    window.addEventListener('scroll', onScroll, { passive: true })
-    window.addEventListener('resize', onScroll)
-
-    return () => {
-      if (raf) cancelAnimationFrame(raf)
-      window.removeEventListener('scroll', onScroll)
-      window.removeEventListener('resize', onScroll)
-    }
-  }, [sectionInView])
+  const activeService = services.find((s) => s.slug === activeSlug) || services[0]
+  const splitServices = services.filter((s) => LAYOUTS[s.slug] === 'split' || !LAYOUTS[s.slug])
+  const splitIndex = splitServices.indexOf(activeService)
+  const reversed = splitIndex % 2 === 1
 
   return (
-    <section ref={sectionRef} id="services" className="grain bg-alabaster px-6 md:px-12 py-24">
+    <section
+      ref={sectionRef}
+      id="services"
+      className="grain bg-alabaster px-6 md:px-12 py-24 scroll-mt-16"
+    >
       <span className="spaced-caps text-[1.05rem] text-umber">What We Do</span>
 
       <div className="mt-6">
         <nav
           aria-label="Services"
-          className="relative"
+          className="sticky top-16 z-20 bg-alabaster/90 backdrop-blur-sm py-4 border-b border-umber/10 -mx-6 px-6 md:-mx-12 md:px-12"
         >
-          <div ref={topSentinelRef} className="h-0" />
-          <div className="hidden md:flex md:items-center md:justify-start">
-            <div ref={originalNavRef} className="sticky top-24 z-10 flex gap-6 mb-4">
-              {services.map((service) => (
-                <a
-                  key={service.slug}
-                  href={`#${service.slug}`}
-                  className={`spaced-caps text-[0.8rem] pb-1 border-b transition-colors whitespace-nowrap ${
-                    activeSlug === service.slug ? 'text-umber border-umber' : 'text-umber/50 border-transparent'
-                  }`}
-                  aria-current={activeSlug === service.slug ? 'true' : undefined}
-                >
-                  {service.category}
-                </a>
-              ))}
-            </div>
+          <div className="flex gap-6 overflow-x-auto scrollbar-none pb-1 md:flex-wrap md:overflow-visible">
+            {services.map((service) => (
+              <button
+                key={service.slug}
+                onClick={(e) => {
+                  e.preventDefault()
+                  setActiveSlug(service.slug)
+                  sectionRef.current?.scrollIntoView({ behavior: 'smooth' })
+                }}
+                className={`spaced-caps text-[0.8rem] pb-1 border-b transition-colors whitespace-nowrap cursor-pointer ${
+                  activeSlug === service.slug ? 'text-umber border-umber' : 'text-umber/50 border-transparent'
+                }`}
+                aria-current={activeSlug === service.slug ? 'true' : undefined}
+              >
+                {service.category}
+              </button>
+            ))}
           </div>
-
-          {/* Small screens: compact horizontal nav that doesn't take much space */}
-          <div className="md:hidden mt-3 overflow-auto">
-            <div className="flex gap-6 mb-4">
-              {services.map((service) => (
-                <a
-                  key={service.slug}
-                  href={`#${service.slug}`}
-                  className={`spaced-caps text-[0.8rem] pb-1 border-b transition-colors whitespace-nowrap ${
-                    activeSlug === service.slug ? 'text-umber border-umber' : 'text-umber/50 border-transparent'
-                  }`}
-                >
-                  {service.category}
-                </a>
-              ))}
-            </div>
-          </div>
-          {pinned ? (
-            <div className="hidden md:block fixed right-6 top-20 z-50">
-              <div className="bg-alabaster/80 backdrop-blur-sm px-3 py-2 rounded-md shadow-md">
-                <div className="flex gap-4">
-                  {services.map((service) => (
-                    <a
-                      key={service.slug}
-                      href={`#${service.slug}`}
-                      className={`spaced-caps text-[0.8rem] pb-1 border-b transition-colors whitespace-nowrap ${
-                        activeSlug === service.slug ? 'text-umber border-umber' : 'text-umber/50 border-transparent'
-                      }`}
-                      aria-current={activeSlug === service.slug ? 'true' : undefined}
-                    >
-                      {service.category}
-                    </a>
-                  ))}
-                </div>
-              </div>
-            </div>
-          ) : null}
         </nav>
       </div>
 
-      <div className="mt-10">
-        {services.map((service) => {
-          const layout = LAYOUTS[service.slug] ?? 'split'
-          if (layout === 'wide') return <ServiceRowWide key={service.slug} service={service} />
-          if (layout === 'emphasis') return <ServiceRowEmphasis key={service.slug} service={service} />
-          const reversed = splitIndex % 2 === 1
-          splitIndex += 1
-          return <ServiceRowSplit key={service.slug} service={service} reversed={reversed} />
-        })}
+      <div className="mt-10 min-h-[400px]">
+        <AnimatePresence mode="wait">
+          {activeService && (
+            <motion.div
+              key={activeService.slug}
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -15 }}
+              transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+            >
+              {(() => {
+                const layout = LAYOUTS[activeService.slug] ?? 'split'
+                if (layout === 'wide') return <ServiceRowWide service={activeService} />
+                if (layout === 'emphasis') return <ServiceRowEmphasis service={activeService} />
+                return <ServiceRowSplit service={activeService} reversed={reversed} />
+              })()}
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
-          <div ref={bottomSentinelRef} className="h-0" />
     </section>
   )
 }

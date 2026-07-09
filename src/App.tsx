@@ -1,6 +1,5 @@
 import Nav from './components/Nav'
 import Hero from './components/Hero'
-import Philosophy from './components/Philosophy'
 import Founder from './components/Founder'
 import AboutStudio from './components/AboutStudio'
 import Services from './components/Services'
@@ -18,7 +17,6 @@ export default function App() {
       <Nav />
       <main>
         <Hero />
-        <Philosophy />
         <Founder />
         <AboutStudio />
         <Services />

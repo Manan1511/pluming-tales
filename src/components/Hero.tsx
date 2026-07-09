@@ -28,22 +28,15 @@ export default function Hero() {
             </p>
 
             <div className="flex flex-wrap items-baseline gap-8 mt-10">
-              {hero.ctas.map((cta) => {
-                const primary = cta.label === 'Enquire Now'
-                return (
-                  <a
-                    key={cta.label}
-                    href={cta.href}
-                    className={
-                      primary
-                        ? 'spaced-caps inline-block text-[0.85rem] w-fit font-medium border-b border-umber pb-1'
-                        : 'underline-grow spaced-caps inline-block text-[0.85rem] w-fit'
-                    }
-                  >
-                    {cta.label} →
-                  </a>
-                )
-              })}
+              {hero.ctas.map((cta) => (
+                <a
+                  key={cta.label}
+                  href={cta.href}
+                  className="underline-grow spaced-caps inline-block text-[0.85rem] w-fit"
+                >
+                  {cta.label} →
+                </a>
+              ))}
             </div>
           </div>
 

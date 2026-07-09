@@ -17,15 +17,21 @@ export default function Nav() {
         scrolled ? 'bg-alabaster/92 backdrop-blur-sm' : 'bg-transparent'
       }`}
     >
-      {/* Desktop: single-line wordmark (Original: 3-line stacked text-[0.8rem]) */}
-      <span className="hidden md:inline spaced-caps text-[1.25rem] tracking-[0.16em] whitespace-nowrap">
-        THE PLUMING TALES COMPANY
-      </span>
+      <button
+        onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+        className="text-left cursor-pointer focus:outline-none focus-visible:ring-1 focus-visible:ring-umber"
+        aria-label="Scroll to top"
+      >
+        {/* Desktop: single-line wordmark (Original: 3-line stacked text-[0.8rem]) */}
+        <span className="hidden md:inline spaced-caps text-[1.25rem] tracking-[0.16em] whitespace-nowrap">
+          THE PLUMING TALES COMPANY
+        </span>
 
-      {/* Mobile: single-line mark (Original: text-[0.8rem]) */}
-      <span className="md:hidden spaced-caps text-[1.08rem] tracking-[0.12em] whitespace-nowrap">
-        PLUMING TALES
-      </span>
+        {/* Mobile: single-line mark (Original: text-[0.8rem]) */}
+        <span className="md:hidden spaced-caps text-[1.08rem] tracking-[0.12em] whitespace-nowrap">
+          PLUMING TALES
+        </span>
+      </button>
 
       <nav className="flex items-center gap-5 md:gap-8">
         {navLinks.map(({ label, href }) => (

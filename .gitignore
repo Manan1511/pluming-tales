@@ -22,3 +22,6 @@ __pycache__
 # IDE
 .vscode
 .idea
+
+# Raw Client Images
+/images/

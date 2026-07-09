@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import PlaceholderImage from './PlaceholderImage'
 import ScrollReveal from './ScrollReveal'
@@ -28,12 +28,22 @@ function buildGalleryEntries(): GalleryEntry[] {
 
 export default function Gallery() {
   const [active, setActive] = useState<GalleryFilter>('All')
+  const [isExpanded, setIsExpanded] = useState(false)
   const entries = useMemo(buildGalleryEntries, [])
+
+  // Reset expanded state when active filter changes
+  useEffect(() => {
+    setIsExpanded(false)
+  }, [active])
 
   const filtered =
     active === 'All'
       ? services.flatMap((service) => entries.filter((entry) => entry.category === service.category).slice(0, 2))
       : entries.filter((entry) => entry.category === active)
+
+  const INITIAL_LIMIT = 6
+  const showToggle = filtered.length > INITIAL_LIMIT
+  const displayed = isExpanded ? filtered : filtered.slice(0, INITIAL_LIMIT)
 
   return (
     <section id="gallery" className="grain bg-alabaster border-t border-umber/40 py-32 px-6 md:px-12 scroll-mt-24">
@@ -44,7 +54,7 @@ export default function Gallery() {
           <button
             key={filter}
             onClick={() => setActive(filter)}
-            className={`spaced-caps text-[0.8rem] pb-1 border-b transition-colors ${
+            className={`spaced-caps text-[0.8rem] pb-1 border-b transition-colors cursor-pointer ${
               active === filter ? 'text-umber border-umber' : 'text-umber/50 border-transparent'
             }`}
           >
@@ -67,37 +77,38 @@ export default function Gallery() {
       </AnimatePresence>
 
       <div className="columns-1 md:columns-2 lg:columns-3 gap-6">
-        {filtered.map((entry, i) => {
+        {displayed.map((entry, i) => {
           const list = entry.category === 'Signage' ? landscapeAspects : aspects
           const aspect = list[i % list.length]
           return (
             <ScrollReveal key={entry.id} delay={(i % 6) * 0.06} className="mb-6 break-inside-avoid">
               {entry.src ? (
-                <motion.img
+                <img
                   src={entry.src}
                   alt={`${entry.category} by The Pluming Tales Company`}
-                  initial={{ opacity: 0, y: 8 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, margin: '-80px' }}
-                  transition={{ duration: 0.45, delay: (i % 6) * 0.06, ease: [0.16, 1, 0.3, 1] }}
                   className={`${aspect} w-full object-cover transition-opacity duration-[400ms] ease-in-out hover:opacity-[0.88]`}
+                  loading="lazy"
                 />
               ) : (
-                <motion.div
-                  initial={{ opacity: 0, y: 8 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, margin: '-80px' }}
-                  transition={{ duration: 0.45, delay: (i % 6) * 0.06, ease: [0.16, 1, 0.3, 1] }}
-                >
-                  <PlaceholderImage
-                    className={`${aspect} w-full transition-opacity duration-[400ms] ease-in-out hover:opacity-[0.88]`}
-                  />
-                </motion.div>
+                <PlaceholderImage
+                  className={`${aspect} w-full transition-opacity duration-[400ms] ease-in-out hover:opacity-[0.88]`}
+                />
               )}
             </ScrollReveal>
           )
         })}
       </div>
+
+      {showToggle && (
+        <div className="flex justify-center mt-12">
+          <button
+            onClick={() => setIsExpanded(!isExpanded)}
+            className="underline-grow spaced-caps text-[0.85rem] cursor-pointer"
+          >
+            {isExpanded ? 'View Less' : 'View More'}
+          </button>
+        </div>
+      )}
     </section>
   )
 }
