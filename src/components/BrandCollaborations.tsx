@@ -30,8 +30,7 @@ export default function BrandCollaborations() {
 
         <ScrollReveal delay={0.1} className="mt-12 md:pr-[10%]">
           <SmartImage
-            folder="gallery/on-site"
-            index={2}
+            folder="brand-collaborations"
             alt="Brand activation and on-site personalisation by The Pluming Tales Company"
             className="aspect-[2/1] w-full"
           />
