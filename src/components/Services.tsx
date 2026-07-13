@@ -57,9 +57,15 @@ function ServiceRowSplit({ service, reversed }: { service: Service; reversed: bo
   )
 }
 
-/* Text-only rhythm break: no image, so nothing to crop. Breaks up the split
-   pattern without forcing a portrait photo into a landscape frame. */
+/* Emphasis rows are text-only by default (no source photo to crop), but a
+   service can point at a specific real photo via EMPHASIS_IMAGES below. */
+const EMPHASIS_IMAGES: Record<string, { folder: string; index: number }> = {
+  'on-site': { folder: 'founder', index: 1 },
+}
+
 function ServiceRowEmphasis({ service }: { service: Service }) {
+  const image = EMPHASIS_IMAGES[service.slug]
+
   return (
     <div id={service.slug} className="py-12 scroll-mt-24">
       <ScrollReveal className="max-w-[720px] mx-auto text-center">
@@ -73,6 +79,18 @@ function ServiceRowEmphasis({ service }: { service: Service }) {
         <p className="italic-safe mx-auto mt-6 max-w-[42ch]" style={{ fontSize: 'clamp(1.4rem, 2.2vw, 1.75rem)' }}>
           {service.whyItMatters}
         </p>
+
+        {image && (
+          <div className="mt-8 max-w-[420px] mx-auto overflow-hidden">
+            <SmartImage
+              folder={image.folder}
+              index={image.index}
+              alt={`${service.name} by The Pluming Tales Company`}
+              className="aspect-[4/5] w-full"
+            />
+          </div>
+        )}
+
         <p className="text-lg leading-[1.8] mt-6 max-w-[52ch] mx-auto">{service.whatWeCreate}</p>
         <div className="mt-8 flex justify-center">
           <ChosenFor items={service.chosenFor} className="justify-center" />

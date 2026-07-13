@@ -1,14 +1,8 @@
-import { useEffect, useMemo, useState } from 'react'
-import { AnimatePresence, motion } from 'framer-motion'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import PlaceholderImage from './PlaceholderImage'
-import ScrollReveal from './ScrollReveal'
 import { galleryFilters, services, type GalleryFilter } from '../data/content'
 import { getImages } from '../lib/images'
-
-const aspects = ['aspect-[3/4]', 'aspect-square', 'aspect-[4/5]']
-// Signage is shot as wide tabletop scenes — the portrait aspects above would
-// crop out the display pieces on either side of the frame.
-const landscapeAspects = ['aspect-[4/3]', 'aspect-[3/2]']
 
 interface GalleryEntry {
   id: string
@@ -26,24 +20,124 @@ function buildGalleryEntries(): GalleryEntry[] {
   })
 }
 
+const SPEED_PX_PER_SEC = 40
+// Minimum cards a row needs to still feel like a full, alive marquee.
+// Thin categories get padded by cycling back through their own shuffled set.
+const MIN_ROW_CARDS = 6
+
+function shuffle(list: GalleryEntry[]): GalleryEntry[] {
+  const out = [...list]
+  for (let i = out.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1))
+    ;[out[i], out[j]] = [out[j], out[i]]
+  }
+  return out
+}
+
+function padToMin(list: GalleryEntry[]): GalleryEntry[] {
+  if (list.length === 0 || list.length >= MIN_ROW_CARDS) return list
+  const out = [...list]
+  let i = 0
+  while (out.length < MIN_ROW_CARDS) {
+    const src = list[i % list.length]
+    out.push({ ...src, id: `${src.id}-pad${i}` })
+    i++
+  }
+  return out
+}
+
+function GalleryCard({ entry }: { entry: GalleryEntry }) {
+  // Signage is shot as wide tabletop scenes; forcing it into the 4:5 frame
+  // used for everything else would crop out the display pieces.
+  const aspect = entry.category === 'Signage' ? 'aspect-[4/3]' : 'aspect-[4/5]'
+  return entry.src ? (
+    <img
+      src={entry.src}
+      alt={`${entry.category} by The Pluming Tales Company`}
+      className={`${aspect} w-full object-cover transition-opacity duration-[400ms] ease-in-out hover:opacity-[0.88]`}
+      loading="lazy"
+    />
+  ) : (
+    <PlaceholderImage
+      className={`${aspect} w-full transition-opacity duration-[400ms] ease-in-out hover:opacity-[0.88]`}
+    />
+  )
+}
+
+const CARD_WIDTH_CLASS = 'shrink-0 w-[75vw] sm:w-[45vw] md:w-[30vw] lg:w-[27vw] max-w-[420px]'
+
+function GalleryRow({ items, reverse }: { items: GalleryEntry[]; reverse: boolean }) {
+  const trackRef = useRef<HTMLDivElement>(null)
+  const reduceMotion = useReducedMotion()
+  const [paused, setPaused] = useState(false)
+  const [duration, setDuration] = useState(30)
+
+  // Duplicated so the row can loop seamlessly: the track animates from 0 to
+  // -50% (exactly one copy's width), then jumps back to 0, unnoticed.
+  const looped = [...items, ...items.map((entry) => ({ ...entry, id: `${entry.id}-loop` }))]
+
+  useEffect(() => {
+    const el = trackRef.current
+    if (!el) return
+    const halfWidth = el.scrollWidth / 2
+    if (halfWidth > 0) setDuration(halfWidth / SPEED_PX_PER_SEC)
+  }, [items])
+
+  if (reduceMotion) {
+    return (
+      <div className="flex gap-6 overflow-x-auto scrollbar-none pb-2">
+        {items.map((entry) => (
+          <div key={entry.id} className={CARD_WIDTH_CLASS}>
+            <GalleryCard entry={entry} />
+          </div>
+        ))}
+      </div>
+    )
+  }
+
+  const pause = () => setPaused(true)
+  const resume = () => setPaused(false)
+
+  return (
+    <div className="overflow-hidden">
+      <div
+        ref={trackRef}
+        onMouseEnter={pause}
+        onMouseLeave={resume}
+        onTouchStart={pause}
+        onTouchEnd={resume}
+        className="flex gap-6 w-max animate-marquee"
+        style={{
+          animationDuration: `${duration}s`,
+          animationDirection: reverse ? 'reverse' : 'normal',
+          animationPlayState: paused ? 'paused' : 'running',
+        }}
+      >
+        {looped.map((entry) => (
+          <div key={entry.id} className={CARD_WIDTH_CLASS}>
+            <GalleryCard entry={entry} />
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
 export default function Gallery() {
   const [active, setActive] = useState<GalleryFilter>('All')
-  const [isExpanded, setIsExpanded] = useState(false)
   const entries = useMemo(buildGalleryEntries, [])
 
-  // Reset expanded state when active filter changes
-  useEffect(() => {
-    setIsExpanded(false)
-  }, [active])
-
-  const filtered =
-    active === 'All'
-      ? services.flatMap((service) => entries.filter((entry) => entry.category === service.category).slice(0, 2))
-      : entries.filter((entry) => entry.category === active)
-
-  const INITIAL_LIMIT = 6
-  const showToggle = filtered.length > INITIAL_LIMIT
-  const displayed = isExpanded ? filtered : filtered.slice(0, INITIAL_LIMIT)
+  // Reshuffled and re-split only when the filter changes, not on every
+  // render, so the rows don't jump around during unrelated re-renders.
+  const { row1, row2 } = useMemo(() => {
+    const filtered = active === 'All' ? entries : entries.filter((entry) => entry.category === active)
+    const shuffled = shuffle(filtered)
+    const half = Math.ceil(shuffled.length / 2)
+    return {
+      row1: padToMin(shuffled.slice(0, half)),
+      row2: padToMin(shuffled.slice(half)),
+    }
+  }, [active, entries])
 
   return (
     <section id="gallery" className="grain bg-alabaster border-t border-umber/40 py-32 px-6 md:px-12 scroll-mt-24">
@@ -65,50 +159,22 @@ export default function Gallery() {
 
       <AnimatePresence mode="wait">
         <motion.p
+          key={active}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.4, ease: 'easeInOut' }}
-          className="italic-safe mb-16"
+          className="italic-safe mb-12"
           style={{ fontSize: 'clamp(1.25rem, 2vw, 1.75rem)' }}
         >
           Each stroke, a thought made visible.
         </motion.p>
       </AnimatePresence>
 
-      <div className="columns-1 md:columns-2 lg:columns-3 gap-6">
-        {displayed.map((entry, i) => {
-          const list = entry.category === 'Signage' ? landscapeAspects : aspects
-          const aspect = list[i % list.length]
-          return (
-            <ScrollReveal key={entry.id} delay={(i % 6) * 0.06} className="mb-6 break-inside-avoid">
-              {entry.src ? (
-                <img
-                  src={entry.src}
-                  alt={`${entry.category} by The Pluming Tales Company`}
-                  className={`${aspect} w-full object-cover transition-opacity duration-[400ms] ease-in-out hover:opacity-[0.88]`}
-                  loading="lazy"
-                />
-              ) : (
-                <PlaceholderImage
-                  className={`${aspect} w-full transition-opacity duration-[400ms] ease-in-out hover:opacity-[0.88]`}
-                />
-              )}
-            </ScrollReveal>
-          )
-        })}
+      <div className="flex flex-col gap-6">
+        <GalleryRow items={row1} reverse={false} />
+        <GalleryRow items={row2} reverse />
       </div>
-
-      {showToggle && (
-        <div className="flex justify-center mt-12">
-          <button
-            onClick={() => setIsExpanded(!isExpanded)}
-            className="underline-grow spaced-caps text-[0.85rem] cursor-pointer"
-          >
-            {isExpanded ? 'View Less' : 'View More'}
-          </button>
-        </div>
-      )}
     </section>
   )
 }

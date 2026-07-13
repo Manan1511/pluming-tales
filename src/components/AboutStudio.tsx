@@ -4,13 +4,13 @@ import ScrollReveal from './ScrollReveal'
 
 export default function AboutStudio() {
   return (
-    <section className="grain relative bg-oatmere py-32 overflow-hidden">
+    <section id="about" className="grain relative bg-oatmere py-32 overflow-hidden scroll-mt-24">
       <span
         className="absolute top-8 right-6 md:right-12 font-medium text-umber opacity-15 select-none"
         style={{ fontSize: '8rem' }}
         aria-hidden="true"
       >
-        02
+        01
       </span>
 
       <div className="relative px-6 md:px-12 flex flex-col md:flex-row gap-10 md:gap-16">

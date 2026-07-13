@@ -14,10 +14,25 @@
     scroll-behavior: smooth;
   }
 
+  /* Quill cursor: the client's own feather artwork (src/assets/images/quill.jpg),
+     keyed to transparency and mirrored horizontally so the tip points down-left
+     — see src/assets/quill-cursor.png. Hotspot sits at that nib tip (0,55),
+     where the "ink" lands. Interactive elements reuse the identical artwork
+     with the native fallback swapped to pointer so usability degrades sanely
+     if the image fails to load. */
   body {
     font-family: var(--font-serif);
     color: var(--color-onyx);
     background-color: var(--color-alabaster);
+    cursor: url('./assets/quill-cursor.png') 0 55, auto;
+  }
+
+  a,
+  button,
+  [role='button'],
+  label,
+  select {
+    cursor: url('./assets/quill-cursor.png') 0 55, pointer;
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -107,6 +122,28 @@
   .scrollbar-none {
     -ms-overflow-style: none;
     scrollbar-width: none;
+  }
+
+  /* Gallery marquee: animates a transform, not scroll position, so the
+     compositor runs it independent of the main thread. Duplicated content
+     scrolls exactly one copy's width (-50%) then loops, seamlessly. */
+  @keyframes marquee {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(-50%);
+    }
+  }
+
+  .animate-marquee {
+    animation: marquee linear infinite;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .animate-marquee {
+      animation: none;
+    }
   }
 }
 
