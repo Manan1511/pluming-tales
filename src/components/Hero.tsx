@@ -10,6 +10,7 @@ import {
 } from 'framer-motion'
 import SmartImage from './SmartImage'
 import HeroInkFluid from './HeroInkFluid'
+import logo from '../assets/logo.png'
 import { hero } from '../data/content'
 
 const EASE = [0.16, 1, 0.3, 1] as const
@@ -88,10 +89,14 @@ export default function Hero() {
               className="block w-20 h-px bg-umber mb-8 origin-left"
               variants={reduceMotion ? undefined : hairlineGrow}
             />
-            {/* Original size: text-[0.8rem] */}
-            <motion.span className="spaced-caps text-[1.1rem] mb-6" variants={reduceMotion ? undefined : rise}>
-              {hero.eyebrow}
-            </motion.span>
+            {/* Logo mark replaces the old text eyebrow (which just repeated
+                the company name the logo already says). */}
+            <motion.img
+              src={logo}
+              alt="The Pluming Tales Company"
+              className="self-start h-16 md:h-20 w-auto mb-6"
+              variants={reduceMotion ? undefined : rise}
+            />
             <h1 className="font-medium -tracking-[0.02em]" style={{ fontSize: 'clamp(3.5rem, 8vw, 7rem)', lineHeight: 1 }}>
               {headlineLines.map((line) => (
                 <motion.span key={line} className="block" variants={reduceMotion ? undefined : rise}>

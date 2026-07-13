@@ -6,7 +6,6 @@ export const navLinks = [
 ]
 
 export const hero = {
-  eyebrow: 'THE PLUMING TALES COMPANY',
   subheadline:
     'Bespoke Calligraphy, Engraving & Luxury Personalisation for Celebrations, Brands and Keepsakes.',
   paragraphs: [

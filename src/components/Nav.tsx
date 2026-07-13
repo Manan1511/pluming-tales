@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { navLinks } from '../data/content'
+import logo from '../assets/logo.png'
 
 export default function Nav() {
   const [scrolled, setScrolled] = useState(false)
@@ -40,15 +41,7 @@ export default function Nav() {
         className="text-left cursor-pointer focus:outline-none focus-visible:ring-1 focus-visible:ring-umber"
         aria-label="Scroll to top"
       >
-        {/* Desktop: single-line wordmark (Original: 3-line stacked text-[0.8rem]) */}
-        <span className="hidden lg:inline spaced-caps text-[1.25rem] tracking-[0.16em] whitespace-nowrap">
-          THE PLUMING TALES COMPANY
-        </span>
-
-        {/* Mobile: single-line mark (Original: text-[0.8rem]) */}
-        <span className="lg:hidden spaced-caps text-[1.08rem] tracking-[0.12em] whitespace-nowrap">
-          PLUMING TALES
-        </span>
+        <img src={logo} alt="The Pluming Tales Company" className="h-9 lg:h-11 w-auto" />
       </button>
 
       <nav className="hidden lg:flex items-center gap-8">
