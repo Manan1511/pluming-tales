@@ -10,7 +10,7 @@ import {
 } from 'framer-motion'
 import SmartImage from './SmartImage'
 import HeroInkFluid from './HeroInkFluid'
-import logo from '../assets/logo.png'
+import logo from '../assets/logo.svg'
 import { hero } from '../data/content'
 
 const EASE = [0.16, 1, 0.3, 1] as const

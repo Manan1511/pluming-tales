@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { navLinks } from '../data/content'
-import logo from '../assets/logo.png'
+import logo from '../assets/logo.svg'
 
 export default function Nav() {
   const [scrolled, setScrolled] = useState(false)
