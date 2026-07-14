@@ -46,20 +46,23 @@ function padToMin(list: GalleryEntry[]): GalleryEntry[] {
   return out
 }
 
+// One fixed aspect for every card, regardless of category: mixed aspect
+// ratios (portrait vs. Signage's wider tabletop shots) made rows look
+// jagged whenever categories shuffled together. object-cover crops to fit
+// rather than stretching.
+const CARD_ASPECT = 'aspect-[4/5]'
+
 function GalleryCard({ entry }: { entry: GalleryEntry }) {
-  // Signage is shot as wide tabletop scenes; forcing it into the 4:5 frame
-  // used for everything else would crop out the display pieces.
-  const aspect = entry.category === 'Signage' ? 'aspect-[4/3]' : 'aspect-[4/5]'
   return entry.src ? (
     <img
       src={entry.src}
       alt={`${entry.category} by The Pluming Tales Company`}
-      className={`${aspect} w-full object-cover transition-opacity duration-[400ms] ease-in-out hover:opacity-[0.88]`}
+      className={`${CARD_ASPECT} w-full object-cover transition-opacity duration-[400ms] ease-in-out hover:opacity-[0.88]`}
       loading="lazy"
     />
   ) : (
     <PlaceholderImage
-      className={`${aspect} w-full transition-opacity duration-[400ms] ease-in-out hover:opacity-[0.88]`}
+      className={`${CARD_ASPECT} w-full transition-opacity duration-[400ms] ease-in-out hover:opacity-[0.88]`}
     />
   )
 }
