@@ -38,7 +38,7 @@ export default function Nav() {
           setMenuOpen(false)
           window.scrollTo({ top: 0, behavior: 'smooth' })
         }}
-        className="text-left cursor-pointer focus:outline-none focus-visible:ring-1 focus-visible:ring-umber"
+        className="text-left focus:outline-none focus-visible:ring-1 focus-visible:ring-umber"
         aria-label="Scroll to top"
       >
         <img src={logo} alt="The Pluming Tales Company" className="h-9 lg:h-11 w-auto" />
@@ -55,7 +55,7 @@ export default function Nav() {
       {/* Mobile: hamburger, morphs into an X while the menu is open. */}
       <button
         onClick={() => setMenuOpen((open) => !open)}
-        className="lg:hidden relative z-10 h-8 w-8 flex flex-col items-center justify-center gap-[6px] cursor-pointer"
+        className="lg:hidden relative z-10 h-8 w-8 flex flex-col items-center justify-center gap-[6px]"
         aria-label={menuOpen ? 'Close menu' : 'Open menu'}
         aria-expanded={menuOpen}
       >

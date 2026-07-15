@@ -59,6 +59,9 @@ export interface Service {
   chosenFor: string[]
   /** Overrides the default portrait image frame for services shot landscape. */
   imageAspect?: string
+  /** Overrides the default services/<slug> image source. */
+  imageFolder?: string
+  imageIndex?: number
 }
 
 export const services: Service[] = [
@@ -161,6 +164,8 @@ export const services: Service[] = [
     name: 'Live Calligraphy & Engraving Experiences',
     whatWeCreate: 'Interactive personalisation experiences where guests watch keepsakes being created in real time.',
     whyItMatters: 'Because experiences create stronger emotional connections than products alone.',
+    imageFolder: 'founder',
+    imageIndex: 1,
     chosenFor: [
       'Luxury Brand Activations',
       'Retail Events',
@@ -230,21 +235,44 @@ export const whyChooseUs: WhyChooseItem[] = [
   },
 ]
 
-export const galleryFilters = ['All', ...services.map((s) => s.category)] as const
-export type GalleryFilter = (typeof galleryFilters)[number]
-
 export interface ProcessStep {
   number: string
   name: string
   description: string
   align: 'left' | 'right'
+  imageFolder: string
+  imageIndex?: number
 }
 
 export const processSteps: ProcessStep[] = [
-  { number: '01', name: 'Inquire', description: 'Share your vision with us', align: 'left' },
-  { number: '02', name: 'Collaborate', description: 'We design it together', align: 'right' },
-  { number: '03', name: 'Create', description: 'Handcrafted with care and intention', align: 'left' },
-  { number: '04', name: 'Deliver', description: 'Your story, beautifully told', align: 'right' },
+  {
+    number: '01',
+    name: 'Inquire',
+    description: 'Share your vision with us',
+    align: 'left',
+    imageFolder: 'services/stationery',
+  },
+  {
+    number: '02',
+    name: 'Collaborate',
+    description: 'We design it together',
+    align: 'right',
+    imageFolder: 'services/gilding',
+  },
+  {
+    number: '03',
+    name: 'Create',
+    description: 'Handcrafted with care and intention',
+    align: 'left',
+    imageFolder: 'founder',
+  },
+  {
+    number: '04',
+    name: 'Deliver',
+    description: 'Your story, beautifully told',
+    align: 'right',
+    imageFolder: 'about',
+  },
 ]
 
 export interface Testimonial {

@@ -35,6 +35,17 @@
     cursor: url('./assets/quill-cursor.png') 0 55, pointer;
   }
 
+  /* Navbars are functional chrome, not the manuscript itself: selectable
+     controls there get the plain system pointer so it's obvious they're
+     clickable, while the surrounding bar keeps the quill (inherited from
+     body) like the rest of the page. */
+  header a,
+  header button,
+  header [role='button'],
+  nav[aria-label='Services'] button {
+    cursor: pointer;
+  }
+
   @media (prefers-reduced-motion: reduce) {
     html {
       scroll-behavior: auto;

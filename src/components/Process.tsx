@@ -1,8 +1,26 @@
 import { useEffect, useRef, useState } from 'react'
 import { motion, useScroll, useTransform, useMotionValueEvent, useMotionValue } from 'framer-motion'
 import { processSteps } from '../data/content'
+import SmartImage from './SmartImage'
 
 const thresholds = [0.12, 0.33, 0.54, 0.75]
+
+// The row layout only alternates left/right from md upward (below that,
+// each row's photo is centered) — the line's checkpoints need to track
+// that same breakpoint or they stop lining up with the photos on mobile.
+function useIsDesktop() {
+  const [isDesktop, setIsDesktop] = useState(
+    () => typeof window !== 'undefined' && window.innerWidth >= 768,
+  )
+  useEffect(() => {
+    const mq = window.matchMedia('(min-width: 768px)')
+    const onChange = () => setIsDesktop(mq.matches)
+    onChange()
+    mq.addEventListener('change', onChange)
+    return () => mq.removeEventListener('change', onChange)
+  }, [])
+  return isDesktop
+}
 
 const containerVariants = {
   hidden: {},
@@ -38,8 +56,29 @@ const textVariants = {
   },
 }
 
+// The checkpoint photo starts dim and desaturated, like unlit glass, then
+// "illuminates" to full color and a warm glow the instant the drawn line
+// reaches its checkpoint — same trigger (isReached) as the text reveal.
+const imageVariants = {
+  hidden: {
+    opacity: 0.3,
+    filter: 'grayscale(1) brightness(0.5)',
+    boxShadow: '0 0 0 rgba(201, 168, 106, 0)',
+  },
+  visible: {
+    opacity: 1,
+    filter: 'grayscale(0) brightness(1)',
+    boxShadow: '0 0 32px rgba(201, 168, 106, 0.45)',
+    transition: {
+      duration: 0.9,
+      ease: [0.16, 1, 0.3, 1],
+    },
+  },
+}
+
 export default function Process() {
   const sectionRef = useRef<HTMLElement | null>(null)
+  const isDesktop = useIsDesktop()
   const { scrollYProgress } = useScroll({
     target: sectionRef,
     offset: ['start center', 'end center'],
@@ -78,10 +117,14 @@ export default function Process() {
     return 1
   })
 
-  const pts = processSteps.map((_, i) => {
+  // Checkpoints sit at each row's photo (near the section edge), not the
+  // numeral — the numeral's open counters used to let the curve show through
+  // and read as crossing the digits. Anchoring on the photo also means the
+  // line visually arrives at the thing it's illuminating.
+  const pts = processSteps.map((step, i) => {
     const n = processSteps.length
     const y = 16 + (i * 70) / Math.max(1, n - 1)
-    const x = i % 2 === 0 ? 24 : 76
+    const x = isDesktop ? (step.align === 'left' ? 9 : 91) : 50
     return { x, y }
   })
 
@@ -103,7 +146,7 @@ export default function Process() {
     <section ref={sectionRef} className="relative bg-onyx text-alabaster py-32 overflow-hidden">
       <svg
         aria-hidden="true"
-        className="absolute inset-0 w-full h-full"
+        className="absolute inset-0 z-0 w-full h-full"
         viewBox="0 0 100 100"
         preserveAspectRatio="none"
         style={{ pointerEvents: 'none' }}
@@ -115,11 +158,11 @@ export default function Process() {
           strokeWidth="0.15"
           strokeLinecap="round"
           strokeLinejoin="round"
-          opacity="0.9"
+          opacity="0.6"
           style={{ pathLength: pathDraw }}
         />
       </svg>
-      <div className="relative flex flex-col gap-16 md:gap-24 px-6 md:px-0">
+      <div className="relative z-10 flex flex-col gap-16 md:gap-24 px-6 md:px-0">
         {processSteps.map((step, i) => {
           const isReached = maxProgress >= thresholds[i]
           return (
@@ -135,26 +178,43 @@ export default function Process() {
                 variants={containerVariants}
                 initial="hidden"
                 animate={isReached ? 'visible' : 'hidden'}
+                className={`flex items-center justify-center gap-6 md:justify-start md:gap-8 ${
+                  step.align === 'right' ? 'md:flex-row-reverse' : ''
+                }`}
               >
-                <motion.span
-                  variants={numberVariants}
-                  className="block font-medium text-umber/30"
-                  style={{ fontSize: '6rem', lineHeight: 1 }}
+                <motion.div
+                  variants={imageVariants}
+                  className="w-20 h-20 md:w-28 md:h-28 rounded-2xl overflow-hidden shrink-0"
                 >
-                  {step.number}
-                </motion.span>
-                <motion.span
-                  variants={textVariants}
-                  className="block spaced-caps text-[0.95rem] mt-4 text-[#C9A86A]"
-                >
-                  {step.name}
-                </motion.span>
-                <motion.span
-                  variants={textVariants}
-                  className="italic-safe block text-alabaster/75 mt-2 text-lg"
-                >
-                  {step.description}
-                </motion.span>
+                  <SmartImage
+                    folder={step.imageFolder}
+                    index={step.imageIndex}
+                    alt={step.name}
+                    className="w-full h-full"
+                  />
+                </motion.div>
+
+                <div className="flex flex-col min-w-0">
+                  <motion.span
+                    variants={numberVariants}
+                    className="block font-medium text-umber/30"
+                    style={{ fontSize: '6rem', lineHeight: 1 }}
+                  >
+                    {step.number}
+                  </motion.span>
+                  <motion.span
+                    variants={textVariants}
+                    className="block spaced-caps text-[0.95rem] mt-4 text-[#C9A86A]"
+                  >
+                    {step.name}
+                  </motion.span>
+                  <motion.span
+                    variants={textVariants}
+                    className="italic-safe block text-alabaster/75 mt-2 text-lg"
+                  >
+                    {step.description}
+                  </motion.span>
+                </div>
               </motion.div>
             </div>
           )

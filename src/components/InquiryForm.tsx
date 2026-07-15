@@ -36,7 +36,7 @@ export default function InquiryForm() {
             {enquiry.heading}
           </h2>
           {enquiry.paragraphs.map((paragraph) => (
-            <p key={paragraph} className="italic-safe mt-4 text-xl">
+            <p key={paragraph} className="mt-4 text-xl leading-[1.6] text-onyx/80">
               {paragraph}
             </p>
           ))}
@@ -44,7 +44,7 @@ export default function InquiryForm() {
 
         {status === 'success' ? (
           <ScrollReveal delay={0.1} className="mt-12">
-            <p className="italic-safe text-xl">
+            <p className="text-xl text-onyx/80">
               Thank you, your story has been sent. We'll be in touch soon.
             </p>
           </ScrollReveal>

@@ -19,7 +19,7 @@ export default function WhyChooseUs() {
               <br />
               Choose Us
             </h2>
-            <p className="text-lg leading-[1.8] text-umber/80 mb-12 max-w-[32ch]">
+            <p className="text-lg leading-[1.8] text-umber mb-12 max-w-[32ch]">
               Thoughtful craftsmanship, attention to detail, and personalized experiences designed to leave a lasting impression.
             </p>
           </ScrollReveal>
@@ -57,7 +57,7 @@ export default function WhyChooseUs() {
                     >
                       {item.name}
                     </h3>
-                    <p className="text-base md:text-lg leading-[1.8] text-umber/90 max-w-[50ch]">
+                    <p className="text-base md:text-lg leading-[1.8] text-umber max-w-[50ch]">
                       {item.description}
                     </p>
                   </div>

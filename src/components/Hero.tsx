@@ -1,4 +1,4 @@
-import { useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import {
   motion,
   useMotionValue,
@@ -6,7 +6,6 @@ import {
   useScroll,
   useSpring,
   useTransform,
-  type Variants,
 } from 'framer-motion'
 import SmartImage from './SmartImage'
 import HeroInkFluid from './HeroInkFluid'
@@ -15,31 +14,53 @@ import { hero } from '../data/content'
 
 const EASE = [0.16, 1, 0.3, 1] as const
 
-const container: Variants = {
-  hidden: {},
-  show: { transition: { staggerChildren: 0.12, delayChildren: 0.1 } },
+// Each element declares its own explicit initial/animate rather than
+// inheriting from a parent's variants + staggerChildren: that propagation
+// chain broke intermittently through the plain (non-motion) wrapper divs
+// in this layout, leaving the whole hero stuck invisible at its "hidden"
+// frame. Explicit per-element animation (same pattern as ScrollReveal)
+// can't get stuck this way — each motion component owns its own state.
+const STAGGER_START = 0.1
+const STAGGER_STEP = 0.12
+
+// Browsers suspend requestAnimationFrame in background tabs, which is what
+// drives framer-motion's transitions. If the hero mounts in a hidden tab,
+// the entrance animation freezes at its "hidden" frame and only plays once
+// the tab is foregrounded — from the user's side, content that should have
+// appeared instantly instead pops in a moment later. Holding the animate
+// target at "hidden" until the page is actually visible means the reveal
+// only ever plays while rAF is really running, so it always completes
+// promptly instead of stalling then jumping.
+function usePageVisible() {
+  const [visible, setVisible] = useState(
+    () => typeof document === 'undefined' || document.visibilityState === 'visible',
+  )
+  useEffect(() => {
+    if (visible) return
+    const onChange = () => {
+      if (document.visibilityState === 'visible') setVisible(true)
+    }
+    document.addEventListener('visibilitychange', onChange)
+    return () => document.removeEventListener('visibilitychange', onChange)
+  }, [visible])
+  return visible
 }
 
-const rise: Variants = {
-  hidden: { opacity: 0, y: 24 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.7, ease: EASE } },
-}
-
-const hairlineGrow: Variants = {
-  hidden: { scaleX: 0 },
-  show: { scaleX: 1, transition: { duration: 0.6, ease: EASE } },
-}
-
-// Bottom-up reveal: top edge starts pushed fully down, then lifts away.
-const clipReveal: Variants = {
-  hidden: { clipPath: 'inset(100% 0 0 0)' },
-  show: { clipPath: 'inset(0% 0 0 0)', transition: { duration: 0.9, ease: EASE } },
+function riseProps(active: boolean, step: number) {
+  if (!active) return {}
+  return {
+    initial: { opacity: 0, y: 24 },
+    animate: { opacity: 1, y: 0 },
+    transition: { duration: 0.7, delay: STAGGER_START + step * STAGGER_STEP, ease: EASE },
+  }
 }
 
 const headlineLines = ['Where every', 'stroke tells']
 
 export default function Hero() {
   const reduceMotion = useReducedMotion()
+  const pageVisible = usePageVisible()
+  const animate = !reduceMotion && pageVisible
   const sectionRef = useRef<HTMLElement>(null)
 
   // Parallax scoped to the hero: image drifts up, headline drifts down.
@@ -73,21 +94,19 @@ export default function Hero() {
     py.set(0)
   }
 
-  const animateProps = reduceMotion
-    ? {}
-    : { variants: container, initial: 'hidden' as const, animate: 'show' as const }
-
   return (
     <section ref={sectionRef} className="grain relative px-6 md:px-12 pt-16 overflow-hidden">
       {/* Living background: ink splashing in from the right, diffusing like in water. */}
       <HeroInkFluid />
 
-      <motion.div className="min-h-[calc(100dvh-4rem)] w-full flex items-center" {...animateProps}>
+      <div className="min-h-[calc(100dvh-4rem)] w-full flex items-center">
         <div className="w-full flex flex-col md:flex-row gap-12 md:gap-8">
           <motion.div className="w-full md:w-[55%] flex flex-col justify-center" style={{ y: headlineY }}>
             <motion.span
               className="block w-20 h-px bg-umber mb-8 origin-left"
-              variants={reduceMotion ? undefined : hairlineGrow}
+              initial={reduceMotion ? undefined : { scaleX: 0 }}
+              animate={reduceMotion ? undefined : { scaleX: animate ? 1 : 0 }}
+              transition={{ duration: 0.6, delay: STAGGER_START, ease: EASE }}
             />
             {/* Logo mark replaces the old text eyebrow (which just repeated
                 the company name the logo already says). */}
@@ -95,27 +114,27 @@ export default function Hero() {
               src={logo}
               alt="The Pluming Tales Company"
               className="self-start h-16 md:h-20 w-auto mb-6"
-              variants={reduceMotion ? undefined : rise}
+              {...riseProps(animate, 1)}
             />
             <h1 className="font-medium -tracking-[0.02em]" style={{ fontSize: 'clamp(3.5rem, 8vw, 7rem)', lineHeight: 1 }}>
-              {headlineLines.map((line) => (
-                <motion.span key={line} className="block" variants={reduceMotion ? undefined : rise}>
+              {headlineLines.map((line, i) => (
+                <motion.span key={line} className="block" {...riseProps(animate, 2 + i)}>
                   {line}
                 </motion.span>
               ))}
-              <motion.span className="block" variants={reduceMotion ? undefined : rise}>
+              <motion.span className="block" {...riseProps(animate, 4)}>
                 <span className="italic-safe underline-grow">a story.</span>
               </motion.span>
             </h1>
             <motion.p
               className="italic-safe mt-8 max-w-[38ch]"
               style={{ fontSize: 'clamp(1.25rem, 2vw, 1.75rem)' }}
-              variants={reduceMotion ? undefined : rise}
+              {...riseProps(animate, 5)}
             >
               {hero.subheadline}
             </motion.p>
 
-            <motion.div className="flex flex-wrap items-baseline gap-8 mt-10" variants={reduceMotion ? undefined : rise}>
+            <motion.div className="flex flex-wrap items-baseline gap-8 mt-10" {...riseProps(animate, 6)}>
               {hero.ctas.map((cta) => (
                 <a
                   key={cta.label}
@@ -135,7 +154,9 @@ export default function Hero() {
             <motion.div
               className="md:mt-[20%] md:-mb-24"
               style={{ y: imageY }}
-              variants={reduceMotion ? undefined : clipReveal}
+              initial={reduceMotion ? undefined : { clipPath: 'inset(100% 0 0 0)' }}
+              animate={reduceMotion ? undefined : { clipPath: animate ? 'inset(0% 0 0 0)' : 'inset(100% 0 0 0)' }}
+              transition={{ duration: 0.9, delay: STAGGER_START, ease: EASE }}
             >
               <motion.div
                 onMouseMove={onImageMove}
@@ -152,7 +173,7 @@ export default function Hero() {
             </motion.div>
           </div>
         </div>
-      </motion.div>
+      </div>
 
       <div className="relative md:w-[55%] pt-16 pb-24">
         <span className="block w-10 h-px bg-umber mb-8" />

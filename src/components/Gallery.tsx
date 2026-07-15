@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
+import { useReducedMotion } from 'framer-motion'
 import PlaceholderImage from './PlaceholderImage'
-import { galleryFilters, services, type GalleryFilter } from '../data/content'
+import { services } from '../data/content'
 import { getImages } from '../lib/images'
 
 interface GalleryEntry {
@@ -127,52 +127,26 @@ function GalleryRow({ items, reverse }: { items: GalleryEntry[]; reverse: boolea
 }
 
 export default function Gallery() {
-  const [active, setActive] = useState<GalleryFilter>('All')
   const entries = useMemo(buildGalleryEntries, [])
 
-  // Reshuffled and re-split only when the filter changes, not on every
-  // render, so the rows don't jump around during unrelated re-renders.
+  // Shuffled once per mount rather than on every render, so the rows don't
+  // jump around during unrelated re-renders.
   const { row1, row2 } = useMemo(() => {
-    const filtered = active === 'All' ? entries : entries.filter((entry) => entry.category === active)
-    const shuffled = shuffle(filtered)
+    const shuffled = shuffle(entries)
     const half = Math.ceil(shuffled.length / 2)
     return {
       row1: padToMin(shuffled.slice(0, half)),
       row2: padToMin(shuffled.slice(half)),
     }
-  }, [active, entries])
+  }, [entries])
 
   return (
     <section id="gallery" className="grain bg-alabaster border-t border-umber/40 py-32 px-6 md:px-12 scroll-mt-24">
       <span className="spaced-caps text-[1.05rem] text-umber block mb-10">Gallery</span>
 
-      <div className="flex flex-wrap gap-6 mb-4">
-        {galleryFilters.map((filter) => (
-          <button
-            key={filter}
-            onClick={() => setActive(filter)}
-            className={`spaced-caps text-[0.8rem] pb-1 border-b transition-colors cursor-pointer ${
-              active === filter ? 'text-umber border-umber' : 'text-umber/50 border-transparent'
-            }`}
-          >
-            {filter}
-          </button>
-        ))}
-      </div>
-
-      <AnimatePresence mode="wait">
-        <motion.p
-          key={active}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.4, ease: 'easeInOut' }}
-          className="italic-safe mb-12"
-          style={{ fontSize: 'clamp(1.25rem, 2vw, 1.75rem)' }}
-        >
-          Each stroke, a thought made visible.
-        </motion.p>
-      </AnimatePresence>
+      <p className="italic-safe mb-12" style={{ fontSize: 'clamp(1.25rem, 2vw, 1.75rem)' }}>
+        Each stroke, a thought made visible.
+      </p>
 
       <div className="flex flex-col gap-6">
         <GalleryRow items={row1} reverse={false} />
