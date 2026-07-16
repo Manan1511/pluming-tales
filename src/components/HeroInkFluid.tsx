@@ -8,9 +8,14 @@ import { useReducedMotion } from 'framer-motion'
  * a CSS mask fades it out before it reaches the headline.
  *
  * Falls back to a static ink wash when WebGL2/float textures are missing,
- * or under prefers-reduced-motion. Phones (viewport < 768px) still get the
- * full interactive sim, just at a much cheaper grid resolution — see
- * MOBILE_BREAKPOINT below.
+ * or under prefers-reduced-motion. Phones (viewport < 768px) get a much
+ * cheaper version of the same sim — smaller grid, fewer pressure-solve
+ * iterations, no vorticity pass, and the physics step runs at half the
+ * frame rate — since the full solve is genuine, continuous GPU load that
+ * shows up as jank/heat on weaker tile renderers. Phones also don't get the
+ * touch-drag ink trail: dragging a finger through the hero is how you
+ * scroll past it, and firing splats on every scroll touchmove fought the
+ * scroll gesture itself. A single tap still drops a splash.
  */
 
 // Ink: near-black (matches the brand's onyx token, never pure #000).
@@ -22,9 +27,13 @@ const INK = [0.05, 0.043, 0.028] as const
 const SIM_RES = 256
 const DYE_RES = 768
 const PRESSURE_ITERATIONS = 24
-const SIM_RES_MOBILE = 96
-const DYE_RES_MOBILE = 384
-const PRESSURE_ITERATIONS_MOBILE = 8
+const SIM_RES_MOBILE = 64
+const DYE_RES_MOBILE = 256
+const PRESSURE_ITERATIONS_MOBILE = 5
+// Runs the physics step on every other rAF tick on mobile — an ink field
+// this slow-moving doesn't need 60 solves/sec, and halving them roughly
+// halves the sim's GPU cost with no visible loss of smoothness.
+const MOBILE_FRAME_SKIP = 2
 const MOBILE_BREAKPOINT = 768 // matches the site's md: breakpoint everywhere else
 // Vorticity confinement produces the threading/curling tendrils. Too high
 // and a single splash floods the whole canvas in a second or two — this
@@ -428,13 +437,19 @@ export default function HeroInkFluid() {
     host.addEventListener('mousemove', onMouseMove)
     host.addEventListener('mouseleave', onMouseLeave)
     host.addEventListener('click', onClick)
-    host.addEventListener('touchmove', onTouchMove, { passive: true })
+    // Touch-drag trail is desktop/tablet-with-stylus territory only — on a
+    // phone, dragging a finger through the hero is the scroll gesture, not
+    // an attempt to paint. A tap still drops a splash everywhere.
+    if (!isMobile) {
+      host.addEventListener('touchmove', onTouchMove, { passive: true })
+    }
     host.addEventListener('touchstart', onTouchStart, { passive: true })
     host.addEventListener('touchend', onTouchEnd)
 
     let raf = 0
     let running = true
     let lastTime = performance.now()
+    let frameCount = 0
 
     const step = (now: number) => {
       raf = requestAnimationFrame(step)
@@ -442,23 +457,37 @@ export default function HeroInkFluid() {
         lastTime = now
         return
       }
+      // Mobile runs the actual solve at half rate — an ink field this
+      // slow-moving doesn't need 60 solves/sec, and this alone roughly
+      // halves the sim's GPU cost. Still scheduling every rAF tick above
+      // keeps dt's clock accurate for whichever tick does run.
+      if (isMobile) {
+        frameCount++
+        if (frameCount % MOBILE_FRAME_SKIP !== 0) return
+      }
       const dt = Math.min((now - lastTime) / 1000, 1 / 30)
       lastTime = now
       gl.disable(gl.BLEND)
 
-      gl.useProgram(curlProgram.prog)
-      gl.uniform2f(curlProgram.uniforms.uTexelSize, velocity.texelSizeX, velocity.texelSizeY)
-      gl.uniform1i(curlProgram.uniforms.uVelocity, velocity.read.attach(0))
-      blit(curl)
+      // Vorticity confinement (curl + its apply pass) is skipped on mobile:
+      // it's what produces the fine curling tendrils, a subtlety that isn't
+      // worth two extra full-screen passes every tick on weaker GPUs. The
+      // dye still moves and diffuses without it, just in softer blobs.
+      if (!isMobile) {
+        gl.useProgram(curlProgram.prog)
+        gl.uniform2f(curlProgram.uniforms.uTexelSize, velocity.texelSizeX, velocity.texelSizeY)
+        gl.uniform1i(curlProgram.uniforms.uVelocity, velocity.read.attach(0))
+        blit(curl)
 
-      gl.useProgram(vorticityProgram.prog)
-      gl.uniform2f(vorticityProgram.uniforms.uTexelSize, velocity.texelSizeX, velocity.texelSizeY)
-      gl.uniform1i(vorticityProgram.uniforms.uVelocity, velocity.read.attach(0))
-      gl.uniform1i(vorticityProgram.uniforms.uCurl, curl.attach(1))
-      gl.uniform1f(vorticityProgram.uniforms.uCurlStrength, CURL_STRENGTH)
-      gl.uniform1f(vorticityProgram.uniforms.uDt, dt)
-      blit(velocity.write)
-      velocity.swap()
+        gl.useProgram(vorticityProgram.prog)
+        gl.uniform2f(vorticityProgram.uniforms.uTexelSize, velocity.texelSizeX, velocity.texelSizeY)
+        gl.uniform1i(vorticityProgram.uniforms.uVelocity, velocity.read.attach(0))
+        gl.uniform1i(vorticityProgram.uniforms.uCurl, curl.attach(1))
+        gl.uniform1f(vorticityProgram.uniforms.uCurlStrength, CURL_STRENGTH)
+        gl.uniform1f(vorticityProgram.uniforms.uDt, dt)
+        blit(velocity.write)
+        velocity.swap()
+      }
 
       gl.useProgram(divergenceProgram.prog)
       gl.uniform2f(divergenceProgram.uniforms.uTexelSize, velocity.texelSizeX, velocity.texelSizeY)

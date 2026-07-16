@@ -109,11 +109,14 @@ export default function Hero() {
               transition={{ duration: 0.6, delay: STAGGER_START, ease: EASE }}
             />
             {/* Logo mark replaces the old text eyebrow (which just repeated
-                the company name the logo already says). */}
+                the company name the logo already says). Hidden on mobile,
+                where it sits only ~30px under the nav's own copy of the
+                same logo and reads as an accidental duplicate rather than
+                a deliberate eyebrow. */}
             <motion.img
               src={logo}
               alt="The Pluming Tales Company"
-              className="self-start h-16 md:h-20 w-auto mb-6"
+              className="hidden md:block self-start h-16 md:h-20 w-auto mb-6"
               {...riseProps(animate, 1)}
             />
             <h1 className="font-medium -tracking-[0.02em]" style={{ fontSize: 'clamp(3.5rem, 8vw, 7rem)', lineHeight: 1 }}>
