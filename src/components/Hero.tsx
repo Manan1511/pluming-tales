@@ -7,8 +7,6 @@ import {
   useSpring,
   useTransform,
 } from 'framer-motion'
-import SmartImage from './SmartImage'
-import HeroInkFluid from './HeroInkFluid'
 import logo from '../assets/logo.svg'
 import { hero } from '../data/content'
 
@@ -96,9 +94,6 @@ export default function Hero() {
 
   return (
     <section ref={sectionRef} className="grain relative px-6 md:px-12 pt-16 overflow-hidden">
-      {/* Living background: ink splashing in from the right, diffusing like in water. */}
-      <HeroInkFluid />
-
       <div className="min-h-[calc(100dvh-4rem)] w-full flex items-center">
         <div className="w-full flex flex-col md:flex-row gap-12 md:gap-8">
           <motion.div className="w-full md:w-[55%] flex flex-col justify-center" style={{ y: headlineY }}>
@@ -107,17 +102,6 @@ export default function Hero() {
               initial={reduceMotion ? undefined : { scaleX: 0 }}
               animate={reduceMotion ? undefined : { scaleX: animate ? 1 : 0 }}
               transition={{ duration: 0.6, delay: STAGGER_START, ease: EASE }}
-            />
-            {/* Logo mark replaces the old text eyebrow (which just repeated
-                the company name the logo already says). Hidden on mobile,
-                where it sits only ~30px under the nav's own copy of the
-                same logo and reads as an accidental duplicate rather than
-                a deliberate eyebrow. */}
-            <motion.img
-              src={logo}
-              alt="The Pluming Tales Company"
-              className="hidden md:block self-start h-16 md:h-20 w-auto mb-6"
-              {...riseProps(animate, 1)}
             />
             <h1 className="font-medium -tracking-[0.02em]" style={{ fontSize: 'clamp(3.5rem, 8vw, 7rem)', lineHeight: 1 }}>
               {headlineLines.map((line, i) => (
@@ -165,27 +149,12 @@ export default function Hero() {
                 onMouseMove={onImageMove}
                 onMouseLeave={onImageLeave}
                 style={{ rotateX, rotateY, transformPerspective: 900 }}
-                className="transition-transform duration-500 ease-out hover:scale-[1.02]"
+                className="aspect-[3/4] w-full bg-oatmere/25 flex items-center justify-center p-12 transition-transform duration-500 ease-out hover:scale-[1.02]"
               >
-                <SmartImage
-                  folder="hero"
-                  alt="Hands hand-lettering calligraphy on parchment"
-                  className="aspect-[3/4] w-full"
-                />
+                <img src={logo} alt="The Pluming Tales Company" className="w-full h-auto object-contain" />
               </motion.div>
             </motion.div>
           </div>
-        </div>
-      </div>
-
-      <div className="relative md:w-[55%] pt-16 pb-24">
-        <span className="block w-10 h-px bg-umber mb-8" />
-        <div className="flex flex-col gap-4">
-          {hero.paragraphs.map((paragraph) => (
-            <p key={paragraph} className="text-lg leading-[1.8] max-w-[52ch]">
-              {paragraph}
-            </p>
-          ))}
         </div>
       </div>
     </section>

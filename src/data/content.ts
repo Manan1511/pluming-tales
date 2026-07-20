@@ -8,10 +8,6 @@ export const navLinks = [
 export const hero = {
   subheadline:
     'Bespoke Calligraphy, Engraving & Luxury Personalisation for Celebrations, Brands and Keepsakes.',
-  paragraphs: [
-    'The Pluming Tales Company is a Mumbai-based luxury personalisation studio specialising in bespoke calligraphy, hand engraving, premium stationery and elevated guest experiences for weddings, luxury brands and meaningful gifting.',
-    'From handcrafted invitations and personalised keepsakes to live event activations and bespoke signage, we create thoughtful details that leave lasting impressions.',
-  ],
   ctas: [
     { label: 'Explore Services', href: '#services' },
     { label: 'Enquire Now', href: '#contact' },
@@ -62,6 +58,8 @@ export interface Service {
   /** Overrides the default services/<slug> image source. */
   imageFolder?: string
   imageIndex?: number
+  /** CSS object-position, for photos whose subject isn't centered in frame. */
+  imagePosition?: string
 }
 
 export const services: Service[] = [
@@ -181,9 +179,9 @@ export const services: Service[] = [
     number: '07',
     category: 'Signage',
     slug: 'signage',
-    name: 'Luxury Name Plates & Bespoke Signage',
+    name: 'Bespoke Signage',
     whatWeCreate:
-      'Custom name plates, welcome signage, table displays and brand installations crafted to elevate spaces and experiences.',
+      'Welcome signage, table displays and brand installations crafted to elevate spaces and experiences.',
     whyItMatters: 'Because first impressions begin long before a conversation starts.',
     chosenFor: [
       'Luxury Residences',
@@ -194,7 +192,24 @@ export const services: Service[] = [
       'Event Installations',
       'Brand Displays',
     ],
-    imageAspect: 'aspect-[4/3]',
+    imagePosition: 'center 25%',
+  },
+  {
+    number: '08',
+    category: 'Name Plate',
+    slug: 'name-plate',
+    name: 'Bespoke Name Plates',
+    whatWeCreate:
+      'Custom name plates for homes, offices and celebrations, personalised with elegant hand lettering.',
+    whyItMatters: 'Because a name, beautifully written, is the first welcome anyone receives.',
+    chosenFor: [
+      'Luxury Residences',
+      'Corporate Offices',
+      'Wedding Celebrations',
+      'Housewarming Gifts',
+      'Hospitality Spaces',
+    ],
+    imageAspect: 'aspect-video',
   },
 ]
 

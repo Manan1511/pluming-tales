@@ -13,7 +13,7 @@ export default function Founder() {
         02
       </span>
 
-      <div className="relative pl-6 pr-6 md:pl-[18vw] md:pr-12">
+      <div className="relative pt-56 pl-6 pr-6 md:pt-0 md:pl-[max(18vw,15rem)] md:pr-12">
         <div className="grid gap-12 md:grid-cols-[1.05fr_0.95fr] md:items-start">
           <ScrollReveal>
             <span className="block w-10 h-px bg-umber mb-8" />

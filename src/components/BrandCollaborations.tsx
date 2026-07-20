@@ -13,7 +13,7 @@ export default function BrandCollaborations() {
         03
       </span>
 
-      <div className="relative pl-6 pr-6 md:pl-[20vw] md:pr-12">
+      <div className="relative pt-56 pl-6 pr-6 md:pt-0 md:pl-[max(20vw,15rem)] md:pr-12">
         <ScrollReveal>
           <span className="block w-10 h-px bg-umber mb-8" />
           <h2 className="font-normal max-w-[680px]" style={{ fontSize: 'clamp(2rem, 4vw, 3.5rem)' }}>

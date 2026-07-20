@@ -142,11 +142,7 @@ export default function Gallery() {
 
   return (
     <section id="gallery" className="grain bg-alabaster border-t border-umber/40 py-32 px-6 md:px-12 scroll-mt-24">
-      <span className="spaced-caps text-[1.05rem] text-umber block mb-10">Gallery</span>
-
-      <p className="italic-safe mb-12" style={{ fontSize: 'clamp(1.25rem, 2vw, 1.75rem)' }}>
-        Each stroke, a thought made visible.
-      </p>
+      <span className="spaced-caps text-[1.05rem] text-umber block mb-12">Gallery</span>
 
       <div className="flex flex-col gap-6">
         <GalleryRow items={row1} reverse={false} />

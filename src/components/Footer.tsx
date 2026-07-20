@@ -1,3 +1,4 @@
+import { IconBrandInstagram, IconMail } from '@tabler/icons-react'
 import { contactInfo } from '../data/content'
 
 export default function Footer() {
@@ -18,16 +19,21 @@ export default function Footer() {
       <div className="mt-6 flex flex-wrap items-center justify-center gap-x-3 gap-y-2 font-medium tracking-[0.1em] text-[0.95rem]">
         <span>{contactInfo.location}</span>
         <span className="text-umber hidden sm:inline">&bull;</span>
-        <a href={`mailto:${contactInfo.email}`} className="underline-grow break-all sm:break-normal">
+        <a
+          href={`mailto:${contactInfo.email}`}
+          className="underline-grow inline-flex items-center gap-1.5 break-all sm:break-normal"
+        >
+          <IconMail size={16} stroke={1.75} className="shrink-0" aria-hidden="true" />
           {contactInfo.email}
         </a>
         <span className="text-umber hidden sm:inline">&bull;</span>
         <a
           href={`https://instagram.com/${contactInfo.instagram.replace('@', '')}`}
-          className="underline-grow"
+          className="underline-grow inline-flex items-center gap-1.5"
           target="_blank"
           rel="noreferrer"
         >
+          <IconBrandInstagram size={16} stroke={1.75} className="shrink-0" aria-hidden="true" />
           {contactInfo.instagram}
         </a>
       </div>

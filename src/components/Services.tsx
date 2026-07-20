@@ -40,6 +40,7 @@ function ServiceRowSplit({ service, reversed }: { service: Service; reversed: bo
               folder={service.imageFolder ?? `services/${service.slug}`}
               index={service.imageIndex}
               alt={service.name}
+              position={service.imagePosition}
               className={`${service.imageAspect ?? 'aspect-[4/5]'} w-full transition-transform duration-[800ms] ease-out hover:scale-[1.04]`}
             />
           </div>
