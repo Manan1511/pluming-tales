@@ -93,7 +93,7 @@ export default function Hero() {
   }
 
   return (
-    <section ref={sectionRef} className="grain relative px-6 md:px-12 pt-16 overflow-hidden">
+    <section ref={sectionRef} className="grain relative px-6 md:px-12 pt-16 pb-16 md:pb-24 overflow-hidden">
       <div className="min-h-[calc(100dvh-4rem)] w-full flex items-center">
         <div className="w-full flex flex-col md:flex-row gap-12 md:gap-8">
           <motion.div className="w-full md:w-[55%] flex flex-col justify-center" style={{ y: headlineY }}>
@@ -139,7 +139,7 @@ export default function Hero() {
 
           <div className="w-full md:w-[45%]">
             <motion.div
-              className="md:mt-[20%] md:-mb-24"
+              className="md:mt-[20%]"
               style={{ y: imageY }}
               initial={reduceMotion ? undefined : { clipPath: 'inset(100% 0 0 0)' }}
               animate={reduceMotion ? undefined : { clipPath: animate ? 'inset(0% 0 0 0)' : 'inset(100% 0 0 0)' }}
