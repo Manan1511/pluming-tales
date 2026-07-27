@@ -3,7 +3,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 import SmartImage from './SmartImage'
 import ScrollReveal from './ScrollReveal'
 import { services, type Service } from '../data/content'
-import { getVideo } from '../lib/videos'
+import { getVideo, getVideoPoster } from '../lib/videos'
 
 // Plain `<video autoPlay>` tags that get mounted/unmounted repeatedly (every
 // tab switch remounts one, via AnimatePresence's key) can silently stop
@@ -22,7 +22,15 @@ import { getVideo } from '../lib/videos'
 // second load() has already started, cancelling that one instead and
 // leaving the element stuck at readyState 0 with nothing left to retry it.
 // pause() alone stops decoding without touching network/source state.
-function ServiceVideo({ src, className }: { src: string | undefined; className: string }) {
+function ServiceVideo({
+  src,
+  poster,
+  className,
+}: {
+  src: string | undefined
+  poster: string | undefined
+  className: string
+}) {
   const ref = useRef<HTMLVideoElement>(null)
 
   useEffect(() => {
@@ -35,7 +43,7 @@ function ServiceVideo({ src, className }: { src: string | undefined; className: 
     }
   }, [src])
 
-  return <video ref={ref} src={src} muted loop playsInline className={className} />
+  return <video ref={ref} src={src} poster={poster} preload="auto" muted loop playsInline className={className} />
 }
 
 function ChosenFor({ items, className = '' }: { items: string[]; className?: string }) {
@@ -73,6 +81,7 @@ function ServiceRowSplit({ service, reversed }: { service: Service; reversed: bo
             {service.videoFolder ? (
               <ServiceVideo
                 src={getVideo(service.videoFolder)}
+                poster={getVideoPoster(service.videoFolder)}
                 className={`${service.imageAspect ?? 'aspect-[4/5]'} w-full object-cover transition-transform duration-[800ms] ease-out hover:scale-[1.04]`}
               />
             ) : (

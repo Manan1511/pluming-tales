@@ -33,6 +33,8 @@ export default function Philosophy() {
           <img
             src={activeImage}
             alt="Calligraphy detail by The Pluming Tales Company"
+            loading="lazy"
+            decoding="async"
             className="w-full aspect-[4/5] object-cover"
           />
         </ScrollReveal>

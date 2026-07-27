@@ -8,6 +8,7 @@ import {
   useTransform,
 } from 'framer-motion'
 import heroVideo from '../assets/video/hero.mp4'
+import heroPoster from '../assets/video/hero-poster.jpg'
 import { hero } from '../data/content'
 
 const EASE = [0.16, 1, 0.3, 1] as const
@@ -163,6 +164,8 @@ export default function Hero() {
               >
                 <video
                   src={heroVideo}
+                  poster={heroPoster}
+                  preload="auto"
                   autoPlay
                   muted
                   loop

@@ -21,6 +21,8 @@ export default function SmartImage({ folder, index = 0, alt, className = '', ton
     <img
       src={src}
       alt={alt}
+      loading="lazy"
+      decoding="async"
       className={`${className} object-cover`}
       style={position ? { objectPosition: position } : undefined}
     />
