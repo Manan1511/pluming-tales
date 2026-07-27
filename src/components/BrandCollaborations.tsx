@@ -32,7 +32,7 @@ export default function BrandCollaborations() {
           <SmartImage
             folder="brand-collaborations"
             alt="Brand activation and on-site personalisation by The Pluming Tales Company"
-            className="aspect-[2/1] w-full"
+            className="aspect-[4/5] w-full"
           />
         </ScrollReveal>
       </div>

@@ -7,7 +7,7 @@ import {
   useSpring,
   useTransform,
 } from 'framer-motion'
-import logo from '../assets/logo.svg'
+import heroVideo from '../assets/video/hero.mp4'
 import { hero } from '../data/content'
 
 const EASE = [0.16, 1, 0.3, 1] as const
@@ -98,6 +98,12 @@ export default function Hero() {
         <div className="w-full flex flex-col md:flex-row gap-12 md:gap-8">
           <motion.div className="w-full md:w-[55%] flex flex-col justify-center" style={{ y: headlineY }}>
             <motion.span
+              className="spaced-caps text-[0.8rem] text-umber mb-5"
+              {...riseProps(animate, 0)}
+            >
+              {hero.eyebrow}
+            </motion.span>
+            <motion.span
               className="block w-20 h-px bg-umber mb-8 origin-left"
               initial={reduceMotion ? undefined : { scaleX: 0 }}
               animate={reduceMotion ? undefined : { scaleX: animate ? 1 : 0 }}
@@ -121,12 +127,16 @@ export default function Hero() {
               {hero.subheadline}
             </motion.p>
 
-            <motion.div className="flex flex-wrap items-baseline gap-8 mt-10" {...riseProps(animate, 6)}>
-              {hero.ctas.map((cta) => (
+            <motion.div className="flex flex-wrap items-center gap-4 mt-10" {...riseProps(animate, 6)}>
+              {hero.ctas.map((cta, i) => (
                 <a
                   key={cta.label}
                   href={cta.href}
-                  className="group underline-grow spaced-caps inline-flex items-baseline gap-1.5 text-[0.85rem] w-fit"
+                  className={`group spaced-caps inline-flex items-center gap-2 text-[0.8rem] px-7 py-3.5 transition-colors duration-300 w-fit ${
+                    i === 0
+                      ? 'bg-onyx text-alabaster hover:bg-umber'
+                      : 'border border-onyx text-onyx hover:border-umber hover:text-umber'
+                  }`}
                 >
                   {cta.label}
                   <span className="inline-block transition-transform duration-300 ease-out group-hover:translate-x-1">
@@ -149,9 +159,16 @@ export default function Hero() {
                 onMouseMove={onImageMove}
                 onMouseLeave={onImageLeave}
                 style={{ rotateX, rotateY, transformPerspective: 900 }}
-                className="aspect-[3/4] w-full bg-oatmere/25 flex items-center justify-center p-12 transition-transform duration-500 ease-out hover:scale-[1.02]"
+                className="aspect-[3/4] w-full overflow-hidden transition-transform duration-500 ease-out hover:scale-[1.02]"
               >
-                <img src={logo} alt="The Pluming Tales Company" className="w-full h-auto object-contain" />
+                <video
+                  src={heroVideo}
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                  className="w-full h-full object-cover"
+                />
               </motion.div>
             </motion.div>
           </div>

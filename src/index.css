@@ -27,6 +27,17 @@
     cursor: url('./assets/quill-cursor.png') 0 55, auto;
   }
 
+  /* Soft warm vignette: a barely-there darkening at the viewport edges so
+     the page reads less flat. Sits above every section's own content (last
+     in the DOM, position: fixed) but below the nav's explicit z-50. */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    background: radial-gradient(ellipse at center, transparent 60%, rgb(13 11 7 / 0.1) 100%);
+  }
+
   a,
   button,
   [role='button'],

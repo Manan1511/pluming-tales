@@ -41,7 +41,12 @@ export default function Nav() {
         className="text-left focus:outline-none focus-visible:ring-1 focus-visible:ring-umber"
         aria-label="Scroll to top"
       >
-        <img src={logo} alt="The Pluming Tales Company" className="h-9 lg:h-11 w-auto" />
+        <img
+          src={logo}
+          alt="The Pluming Tales Company"
+          className="h-9 lg:h-11 w-auto"
+          style={{ filter: 'brightness(0)' }}
+        />
       </button>
 
       <nav className="hidden lg:flex items-center gap-8">

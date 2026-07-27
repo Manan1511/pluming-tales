@@ -6,13 +6,26 @@ export const navLinks = [
 ]
 
 export const hero = {
+  eyebrow: 'Bespoke Calligraphy & Luxury Personalisation',
   subheadline:
     'Bespoke Calligraphy, Engraving & Luxury Personalisation for Celebrations, Brands and Keepsakes.',
   ctas: [
-    { label: 'Explore Services', href: '#services' },
-    { label: 'Enquire Now', href: '#contact' },
+    { label: 'Explore Our Craft', href: '#services' },
+    { label: 'Begin Your Bespoke Order', href: '#contact' },
   ],
 }
+
+export interface CraftedForItem {
+  icon: 'flower' | 'shield' | 'gift' | 'feather'
+  label: string
+}
+
+export const craftedFor: CraftedForItem[] = [
+  { icon: 'flower', label: 'Weddings' },
+  { icon: 'shield', label: 'Brands' },
+  { icon: 'gift', label: 'Celebrations' },
+  { icon: 'feather', label: 'Keepsakes' },
+]
 
 export const philosophy = {
   heading: 'Thoughtful Details. Timeless Elegance.',
@@ -60,6 +73,8 @@ export interface Service {
   imageIndex?: number
   /** CSS object-position, for photos whose subject isn't centered in frame. */
   imagePosition?: string
+  /** When set, plays a muted looping video from videos/<folder> instead of the photo. */
+  videoFolder?: string
 }
 
 export const services: Service[] = [
@@ -71,6 +86,7 @@ export const services: Service[] = [
     whatWeCreate:
       'Personalised engraving across glass, metal, leather, acrylic and wood for gifting, celebrations and brand experiences.',
     whyItMatters: 'Because the most treasured objects are often the ones that carry a personal story.',
+    videoFolder: 'engraving',
     chosenFor: [
       'Perfume Bottles',
       'Champagne & Wine Bottles',
@@ -91,6 +107,7 @@ export const services: Service[] = [
     whatWeCreate:
       'Premium embossing, foil stamping and monogramming for stationery, leather accessories and luxury packaging.',
     whyItMatters: 'Because tactile details communicate craftsmanship and quality before a single word is read.',
+    videoFolder: 'embossing',
     chosenFor: [
       'Luxury Packaging',
       'Wedding Stationery',
@@ -109,6 +126,7 @@ export const services: Service[] = [
     whatWeCreate:
       'Invitation suites, save-the-dates, menus, place cards and wedding stationery designed to reflect your celebration.',
     whyItMatters: 'Because every memorable occasion deserves an introduction that feels just as special.',
+    videoFolder: 'invitations',
     chosenFor: [
       'Weddings',
       'Engagement Celebrations',
@@ -164,6 +182,7 @@ export const services: Service[] = [
     whyItMatters: 'Because experiences create stronger emotional connections than products alone.',
     imageFolder: 'founder',
     imageIndex: 1,
+    videoFolder: 'on-site',
     chosenFor: [
       'Luxury Brand Activations',
       'Retail Events',
@@ -209,7 +228,7 @@ export const services: Service[] = [
       'Housewarming Gifts',
       'Hospitality Spaces',
     ],
-    imageAspect: 'aspect-video',
+    imagePosition: 'center 20%',
   },
 ]
 

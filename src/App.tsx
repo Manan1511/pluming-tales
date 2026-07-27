@@ -1,5 +1,6 @@
 import Nav from './components/Nav'
 import Hero from './components/Hero'
+import CraftedFor from './components/CraftedFor'
 import AboutStudio from './components/AboutStudio'
 import Founder from './components/Founder'
 import Services from './components/Services'
@@ -17,6 +18,7 @@ export default function App() {
       <Nav />
       <main>
         <Hero />
+        <CraftedFor />
         <AboutStudio />
         <Founder />
         <Services />

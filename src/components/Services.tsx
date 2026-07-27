@@ -1,8 +1,42 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import SmartImage from './SmartImage'
 import ScrollReveal from './ScrollReveal'
 import { services, type Service } from '../data/content'
+import { getVideo } from '../lib/videos'
+
+// Plain `<video autoPlay>` tags that get mounted/unmounted repeatedly (every
+// tab switch remounts one, via AnimatePresence's key) can silently stop
+// decoding after a few cycles: browsers cap concurrent hardware video
+// decoder sessions, and after enough churn a fresh element's implicit
+// autoplay-triggered load never actually starts (readyState/networkState
+// both stay at 0). Explicitly calling load() then play() on mount forces
+// the browser to actually kick off that request instead of relying on the
+// autoplay attribute alone.
+//
+// Cleanup only pauses — it deliberately does NOT clear the src/call load()
+// there. That combination briefly aborts the in-flight network request
+// (net::ERR_ABORTED), which is harmless standalone, but React StrictMode's
+// dev-only mount→cleanup→remount dance runs it back-to-back with the next
+// mount's own load(), and the two race: the abort can land after the
+// second load() has already started, cancelling that one instead and
+// leaving the element stuck at readyState 0 with nothing left to retry it.
+// pause() alone stops decoding without touching network/source state.
+function ServiceVideo({ src, className }: { src: string | undefined; className: string }) {
+  const ref = useRef<HTMLVideoElement>(null)
+
+  useEffect(() => {
+    const video = ref.current
+    if (!video) return
+    video.load()
+    video.play().catch(() => {})
+    return () => {
+      video.pause()
+    }
+  }, [src])
+
+  return <video ref={ref} src={src} muted loop playsInline className={className} />
+}
 
 function ChosenFor({ items, className = '' }: { items: string[]; className?: string }) {
   return (
@@ -36,13 +70,20 @@ function ServiceRowSplit({ service, reversed }: { service: Service; reversed: bo
       <div className={`flex flex-col gap-10 md:gap-16 ${reversed ? 'md:flex-row-reverse' : 'md:flex-row'}`}>
         <ScrollReveal className="w-full md:w-[45%]">
           <div className="overflow-hidden">
-            <SmartImage
-              folder={service.imageFolder ?? `services/${service.slug}`}
-              index={service.imageIndex}
-              alt={service.name}
-              position={service.imagePosition}
-              className={`${service.imageAspect ?? 'aspect-[4/5]'} w-full transition-transform duration-[800ms] ease-out hover:scale-[1.04]`}
-            />
+            {service.videoFolder ? (
+              <ServiceVideo
+                src={getVideo(service.videoFolder)}
+                className={`${service.imageAspect ?? 'aspect-[4/5]'} w-full object-cover transition-transform duration-[800ms] ease-out hover:scale-[1.04]`}
+              />
+            ) : (
+              <SmartImage
+                folder={service.imageFolder ?? `services/${service.slug}`}
+                index={service.imageIndex}
+                alt={service.name}
+                position={service.imagePosition}
+                className={`${service.imageAspect ?? 'aspect-[4/5]'} w-full transition-transform duration-[800ms] ease-out hover:scale-[1.04]`}
+              />
+            )}
           </div>
         </ScrollReveal>
 
