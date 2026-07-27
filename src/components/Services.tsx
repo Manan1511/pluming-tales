@@ -109,9 +109,52 @@ function ServiceRowSplit({ service, reversed }: { service: Service; reversed: bo
   )
 }
 
+// Each service video only starts downloading once its tab is selected, so
+// the very first switch always eats the full transfer time (the poster
+// covers the visual gap, but the video itself still takes a beat to catch
+// up). Warming the browser's HTTP cache for every video as soon as the
+// section nears the viewport means that by the time someone actually taps
+// a tab, the file is usually already sitting in cache and swaps in
+// instantly instead of streaming in live.
+function usePrefetchServiceVideos(sectionRef: React.RefObject<HTMLElement | null>) {
+  useEffect(() => {
+    const section = sectionRef.current
+    if (!section) return
+
+    const connection = (navigator as unknown as { connection?: { saveData?: boolean } }).connection
+    if (connection?.saveData) return
+
+    const urls = services
+      .map((s) => (s.videoFolder ? getVideo(s.videoFolder) : undefined))
+      .filter((url): url is string => Boolean(url))
+
+    let done = false
+    const prefetch = () => {
+      if (done) return
+      done = true
+      urls.forEach((url) => {
+        fetch(url, { cache: 'force-cache' }).catch(() => {})
+      })
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((e) => e.isIntersecting)) {
+          prefetch()
+          observer.disconnect()
+        }
+      },
+      { rootMargin: '600px' },
+    )
+    observer.observe(section)
+    return () => observer.disconnect()
+  }, [sectionRef])
+}
+
 export default function Services() {
   const sectionRef = useRef<HTMLElement | null>(null)
   const [activeSlug, setActiveSlug] = useState<string>(services[0]?.slug ?? '')
+  usePrefetchServiceVideos(sectionRef)
 
   const activeService = services.find((s) => s.slug === activeSlug) || services[0]
   const activeIndex = services.indexOf(activeService)
