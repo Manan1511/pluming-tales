@@ -86,7 +86,6 @@ export const services: Service[] = [
     whatWeCreate:
       'Personalised engraving across glass, metal, leather, acrylic and wood for gifting, celebrations and brand experiences.',
     whyItMatters: 'Because the most treasured objects are often the ones that carry a personal story.',
-    videoFolder: 'engraving',
     chosenFor: [
       'Perfume Bottles',
       'Champagne & Wine Bottles',
@@ -126,7 +125,6 @@ export const services: Service[] = [
     whatWeCreate:
       'Invitation suites, save-the-dates, menus, place cards and wedding stationery designed to reflect your celebration.',
     whyItMatters: 'Because every memorable occasion deserves an introduction that feels just as special.',
-    videoFolder: 'invitations',
     chosenFor: [
       'Weddings',
       'Engagement Celebrations',
