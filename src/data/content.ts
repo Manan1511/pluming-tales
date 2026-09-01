@@ -80,6 +80,24 @@ export interface Service {
 export const services: Service[] = [
   {
     number: '01',
+    category: 'Calligraphy',
+    slug: 'calligraphy',
+    name: 'Handwritten Calligraphy & Personalisation',
+    whatWeCreate:
+      'Bespoke calligraphy created entirely by hand for weddings, celebrations, gifting and meaningful keepsakes, from delicate scrolls and framed pieces to handwritten notes and envelopes.',
+    whyItMatters: 'Because some words are worth writing by hand.',
+    chosenFor: [
+      'Wedding Keepsakes',
+      'Framed Artwork',
+      'Handwritten Notes',
+      'Envelopes & Invitations',
+      'Gifting',
+      'Milestone Celebrations',
+      'Corporate Gifting',
+    ],
+  },
+  {
+    number: '02',
     category: 'Engraving',
     slug: 'engraving',
     name: 'Hand Engraving & Surface Personalisation',
@@ -99,7 +117,7 @@ export const services: Service[] = [
     ],
   },
   {
-    number: '02',
+    number: '03',
     category: 'Embossing',
     slug: 'embossing',
     name: 'Luxury Embossing & Heat Foiling',
@@ -118,7 +136,7 @@ export const services: Service[] = [
     ],
   },
   {
-    number: '03',
+    number: '04',
     category: 'Invitations',
     slug: 'invitations',
     name: 'Bespoke Invitations & Paper Goods',
@@ -136,7 +154,7 @@ export const services: Service[] = [
     ],
   },
   {
-    number: '04',
+    number: '05',
     category: 'Gilding',
     slug: 'gilding',
     name: 'Illuminated Gold Leaf Artwork',
@@ -153,7 +171,7 @@ export const services: Service[] = [
     ],
   },
   {
-    number: '05',
+    number: '06',
     category: 'Stationery',
     slug: 'stationery',
     name: 'Bespoke Stationery & Personalised Paper Goods',
@@ -172,7 +190,7 @@ export const services: Service[] = [
     ],
   },
   {
-    number: '06',
+    number: '07',
     category: 'On-Site',
     slug: 'on-site',
     name: 'Live Calligraphy & Engraving Experiences',
@@ -193,7 +211,7 @@ export const services: Service[] = [
     ],
   },
   {
-    number: '07',
+    number: '08',
     category: 'Signage',
     slug: 'signage',
     name: 'Bespoke Signage',
@@ -212,7 +230,7 @@ export const services: Service[] = [
     imagePosition: 'center 25%',
   },
   {
-    number: '08',
+    number: '09',
     category: 'Name Plate',
     slug: 'name-plate',
     name: 'Bespoke Name Plates',
