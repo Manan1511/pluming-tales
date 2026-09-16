@@ -1,30 +1,56 @@
 import { useState, type FormEvent } from 'react'
 import ScrollReveal from './ScrollReveal'
-import { enquiry, formspreeEndpoint, serviceOptions } from '../data/content'
+import { contactInfo, enquiry, serviceOptions } from '../data/content'
+import { submitInquiry, type InquiryFormData } from '../lib/submitInquiry'
 
 const fieldClass =
   'w-full bg-transparent border-b border-onyx/30 py-2 focus:border-umber focus:outline-none transition-colors duration-300 text-lg'
 
 const labelClass = 'block spaced-caps text-[0.88rem] mb-2'
 
-type Status = 'idle' | 'submitting' | 'success' | 'error'
+type Status = 'idle' | 'submitting' | 'success' | 'error' | 'unconfigured'
 
 export default function InquiryForm() {
   const [status, setStatus] = useState<Status>('idle')
+  const [errorMessage, setErrorMessage] = useState<string>('')
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     setStatus('submitting')
+    setErrorMessage('')
+
+    const form = event.currentTarget
+    const formData = new FormData(form)
+
+    const payload: InquiryFormData = {
+      name: String(formData.get('name') ?? '').trim(),
+      email: String(formData.get('email') ?? '').trim(),
+      phone: String(formData.get('phone') ?? '').trim(),
+      company: String(formData.get('company') ?? '').trim() || undefined,
+      date: String(formData.get('date') ?? '').trim(),
+      quantity: String(formData.get('quantity') ?? '').trim(),
+      budget: String(formData.get('budget') ?? '').trim(),
+      location: String(formData.get('location') ?? '').trim(),
+      service: String(formData.get('service') ?? '').trim(),
+      project: String(formData.get('project') ?? '').trim(),
+      honeypot: String(formData.get('honeypot') ?? '').trim(),
+    }
+
     try {
-      const response = await fetch(formspreeEndpoint, {
-        method: 'POST',
-        headers: { Accept: 'application/json' },
-        body: new FormData(event.currentTarget),
-      })
-      setStatus(response.ok ? 'success' : 'error')
-      if (response.ok) event.currentTarget.reset()
+      const result = await submitInquiry(payload)
+
+      if (result.status === 'success') {
+        setStatus('success')
+        form.reset()
+      } else if (result.status === 'unconfigured') {
+        setStatus('unconfigured')
+      } else {
+        setStatus('error')
+        setErrorMessage(result.reason)
+      }
     } catch {
       setStatus('error')
+      setErrorMessage('An unexpected error occurred. Please try again.')
     }
   }
 
@@ -51,6 +77,16 @@ export default function InquiryForm() {
         ) : (
           <ScrollReveal delay={0.1}>
             <form onSubmit={handleSubmit} className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-8">
+              {/* Anti-spam honeypot */}
+              <input
+                type="text"
+                name="honeypot"
+                tabIndex={-1}
+                autoComplete="off"
+                aria-hidden="true"
+                className="hidden"
+              />
+
               <div>
                 <label htmlFor="name" className={labelClass}>
                   NAME
@@ -145,7 +181,19 @@ export default function InquiryForm() {
 
               {status === 'error' && (
                 <p className="md:col-span-2 text-sm text-umber">
-                  Something went wrong. Please try again or reach out directly.
+                  {errorMessage || 'Something went wrong. Please try again or reach out directly.'}
+                </p>
+              )}
+
+              {status === 'unconfigured' && (
+                <p className="md:col-span-2 text-sm text-umber">
+                  Our automated inquiry system is currently being configured. Please contact us directly at{' '}
+                  <a
+                    href={`mailto:${contactInfo.email}`}
+                    className="underline font-medium hover:text-umber/80"
+                  >
+                    {contactInfo.email}
+                  </a>.
                 </p>
               )}
             </form>

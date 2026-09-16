@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "preview": "vite preview",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "test": "vitest run"
   },
   "dependencies": {
     "@fontsource/cormorant-garamond": "^5.2.5",
@@ -28,6 +29,7 @@
     "tailwindcss": "^4.1.4",
     "typescript": "^5.7.3",
     "typescript-eslint": "^8.22.0",
-    "vite": "^6.4.3"
+    "vite": "^6.4.3",
+    "vitest": "^5.0.0"
   }
 }

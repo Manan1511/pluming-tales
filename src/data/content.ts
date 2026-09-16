@@ -359,8 +359,6 @@ export const enquiry = {
 
 export const serviceOptions = services.map((service) => service.name)
 
-/** Placeholder — swap for the real endpoint once the client provides one. */
-export const formspreeEndpoint = 'https://formspree.io/f/REPLACE_ME'
 
 export const contactInfo = {
   instagram: '@theplumingtales',

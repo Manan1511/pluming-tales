@@ -98,7 +98,7 @@ export default function Process() {
   useEffect(() => {
     setMaxProgress(0)
     maxScrollProgress.set(0)
-  }, [])
+  }, [maxScrollProgress])
 
   const pathDraw = useTransform(maxScrollProgress, (progress) => {
     if (progress <= 0.12) return 0
